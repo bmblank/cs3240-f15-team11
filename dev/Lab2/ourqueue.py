@@ -1,5 +1,7 @@
 __author__ = 'horton'
 
+"""Jennifer was here"""
+
 class OurQueue:
 
     def __init__(self, init_values=[]):
