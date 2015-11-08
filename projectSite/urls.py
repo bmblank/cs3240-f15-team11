@@ -19,4 +19,5 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    (r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
 ]
