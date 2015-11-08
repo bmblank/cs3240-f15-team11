@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'postman',
 ]
 
+# Postman extra settings
+POSTMAN_DISALLOW_ANONYMOUS = True
+
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
