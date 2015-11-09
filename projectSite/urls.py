@@ -14,13 +14,27 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import url, include
+
+from django.conf.urls import include, url
 from django.contrib import admin
+from django.conf.urls.static import static
+from django.conf import settings
 
 import postman
 
 urlpatterns = [
+
+    # url(r'^admin/', include(admin.site.urls)),
+
+    url(r'^', include('index.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
     # (r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
+    # url(r'^reports/', reports.site.urls),
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT})
+
+    #front page
+    # url(r'', admin.someview)
+
+
 ]
