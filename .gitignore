@@ -62,3 +62,6 @@ target/
 
 # SQL Database
 *.sqlite3
+
+# PyCharm project
+.idea/
