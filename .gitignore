@@ -68,3 +68,7 @@ target/
 
 #media folder
 media/
+
+# Django
+# Need to ignore settings.py because it includes passwords
+settings.py 
