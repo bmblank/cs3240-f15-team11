@@ -1,3 +1,0 @@
-http://codex.cs.yale.edu/avi/db-book/db6/practice-exer-dir/
-
-Database textbook
