@@ -1,0 +1,35 @@
+Set up Heroku:
+
+Go to Heroku.com and make an account
+
+Start "Getting Started with Python on Heroku"
+https://devcenter.heroku.com/articles/getting-started-with-python
+
+Download and install Heroku Toolbelt
+
+For some reason, my $PATH wasn't working so I had to run heroku command using it's full path
+sudo /usr/local/bin/heroku
+This might be an issue with El Capitan and rootless mode
+
+sudo /usr/local/bin/heroku update
+sudo /usr/local/bin/heroku login
+
+Make a RSA key for heroku stuff.
+ssh-keygen -t rsa
+Directory: ~/.ssh/
+Call it heroku_rsa
+Edit ~/.ssh/config to add the following lines:
+
+sudo /usr/local/bin/heroku keys:add ~/.ssh/heroku_rsa
+
+Change dir to a git repository you want to deploy
+sudo /usr/local/bin/heroku create
+(optionally pass a parameter name to specify the app name)
+The create function will automatically create a git remote called heroku for the working git directory
+
+To deploy:
+git push heroku master
+username: [empty]
+password: [auth token]
+get auth token using:
+sudo /usr/local/bin/heroku auth:token
