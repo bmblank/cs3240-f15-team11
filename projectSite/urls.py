@@ -10,9 +10,9 @@ Class-based views
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
 Including another URLconf
-    1. Add an import:  from blog import urls as blog_urls
+    1. Add an import:  from report import urls as report_urls
     2. Import the include() function: from django.conf.urls import url, include
-    3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
+    3. Add a URL to urlpatterns:  url(r'^report/', include(report_urls))
 """
 
 from django.conf.urls import include, url
@@ -25,16 +25,10 @@ import postman
 urlpatterns = [
 
     # url(r'^admin/', include(admin.site.urls)),
-
+    url(r'^reports/', include('reports.urls')),
     url(r'^', include('index.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
-    # (r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
-    # url(r'^reports/', reports.site.urls),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT})
-
-    #front page
-    # url(r'', admin.someview)
-
 
 ]

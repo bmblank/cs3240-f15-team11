@@ -1,0 +1,23 @@
+<h1>Reports</h1>
+
+<p>These are the reports.</p>
+
+{% if reports_list %}
+    <ul>
+    {% for r in reports_list %}
+        <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No reports are available.</p>
+{% endif %}
+
+
+{% if user.is_authenticated %}
+    <a href="/logout/">Logout</a>
+{% else %}
+    <a href="/login/?next={{ request.path }}">Login</a>
+{% endif %}
+<a href="/home/">Home</a>
+
+
