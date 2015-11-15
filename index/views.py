@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import authenticate, logout
 from django.http import HttpResponse, HttpResponseRedirect
 from projectSite import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
-
+from reports.models import Report
+from django.template import RequestContext, loader
 
 def Login(request):
     next = request.GET.get('next', '/home/')
@@ -32,5 +33,15 @@ def Logout(request):
 def Home(request):
     return render(request, "index/home.html", {})
 
-def Blog(request):
-    return render(request, "index/blog.html", {})
+@login_required
+def ReportList(request):
+    reports_list = Report.objects.order_by('title')[:5]
+    print(reports_list)
+    template = loader.get_template('index/report.html')
+    context = {'reports_list': reports_list}
+    return render(request, 'index/report.html', context)
+
+@login_required
+def detail(request, report_id):
+    r = get_object_or_404(Report, pk=report_id)
+    return render(request, 'index/detail.html', {'r': r})
