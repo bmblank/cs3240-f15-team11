@@ -45,3 +45,7 @@ def ReportList(request):
 def detail(request, report_id):
     r = get_object_or_404(Report, pk=report_id)
     return render(request, 'index/detail.html', {'r': r})
+
+@login_required
+def create(request):
+    return render(request, 'index/create.html', {})

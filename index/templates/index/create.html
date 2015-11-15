@@ -1,0 +1,17 @@
+this is the create page
+
+<form action="/your-name/" method="post">
+    <label for="post_title">Title: </label>
+    <input id="post_title" type="text" name="post_title" value="{{ title }}">
+    <br>
+    <label for="s_description">Short Description: </label>
+    <input id="s_description" type="text" name="s_description" value="{{ short_description }}">
+    <br>
+    <label for="location">Location: </label>
+    <input id="location" type="text" name="location" value="{{ report_location }}">
+    <br>
+    <label for="detailed_description">Detailed Description: </label>
+    <input id="detailed_description" type="text" name="detailed_description" value="{{ detailed_desc }}">
+    <br>
+    <input type="submit" value="OK">
+</form>
