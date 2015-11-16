@@ -1,11 +1,14 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, logout
 from django.http import HttpResponse, HttpResponseRedirect
 from projectSite import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from reports.models import Report
+from .forms import ReportForm
 from django.template import RequestContext, loader
+from django.utils import timezone
+
 
 def Login(request):
     next = request.GET.get('next', '/home/')
@@ -48,4 +51,14 @@ def detail(request, report_id):
 
 @login_required
 def create(request):
-    return render(request, 'index/create.html', {})
+    if request.method == "POST":
+        form = ReportForm(request.POST)
+        if form.is_valid():
+            report = form.save(commit=False)
+            report.created = timezone.now()
+            report.save()
+            return render(request, 'index/report.html')
+
+    else:
+        form = ReportForm
+    return render(request, 'index/create.html', {'form': form})
