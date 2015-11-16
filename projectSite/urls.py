@@ -20,15 +20,12 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
 
-import postman
-
 urlpatterns = [
 
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^reports/', include('reports.urls')),
     url(r'^', include('index.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT})
 
 ]
