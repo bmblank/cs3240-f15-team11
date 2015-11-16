@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
 
-import postman
+#import django_messages
 
 urlpatterns = [
 
@@ -28,7 +28,8 @@ urlpatterns = [
 
     url(r'^', include('index.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
+    url(r'^', include('django_messages.urls')),
+    #url(r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
     # (r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
     # url(r'^reports/', reports.site.urls),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT})
