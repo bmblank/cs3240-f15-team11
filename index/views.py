@@ -54,8 +54,27 @@ def detail(request, report_id):
 
 
 def Register(request):
-    user_form = UserForm()
+    context = RequestContext(request)
+    registered = False
+
+    if request.method == 'POST':
+        user_form = UserForm(data=request.POST)
+
+        if user_form.is_valid() :
+            user = user_form.save()
+            user.set_password(user.password)
+            user.save()
+            registered = True
+            print("USER SUCCESS!")
+        else:
+            print("USER ERROR!")
+    else:
+        user_form = UserForm()
+
+
+    # user_form = UserForm()
     return render(request, 'index/register.html', {'user_form': user_form})
+
 
 
 @login_required
