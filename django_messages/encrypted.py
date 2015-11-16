@@ -1,0 +1,190 @@
+__author__ = 'jrh7qp'
+
+from django import forms
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
+from django.db import models
+from Crypto.PublicKey import RSA
+from Crypto import Random
+from Crypto.Cipher import ARC4
+from Crypto.Hash import SHA256
+
+random_generator = Random.new().read
+key = RSA.generate(1024, random_generator)
+public_key = key.publickey()
+"""the sender must have the public key of receiver, receiver uses their own private key to decrypt"""
+enc_body = public_key(MESSAGE_BODY)
+signature = key.sign(enc_body, ' ')
+
+#EVERY USERS PUBLIC KEY MUST BE GIVEN TO EVERY USER?
+
+
+
+def encryptText():
+
+    """checks capability of encrypting with this algorithm"""
+    #key.can_encrypt()
+    """checks key's capability of signing messages"""
+    #key.can_sign()
+    """checks if key object has private key"""
+    #key.has_private()
+
+
+
+class EncryptionWarning(RuntimeWarning):
+    pass
+
+
+class BaseEncryptedField(models.Field):
+    prefix = 'enc_str:::'
+
+    def __init__(self, *args, **kwargs):
+        if not hasattr(settings, 'ENCRYPTED_FIELD_KEYS_DIR'):
+            raise ImproperlyConfigured('You must set the settings.ENCRYPTED_FIELD_KEYS_DIR '
+                                       'setting to your Keyczar keys directory.')
+        crypt_class = self.get_crypt_class()
+        self.crypt = crypt_class.Read(settings.ENCRYPTED_FIELD_KEYS_DIR)
+
+        # Encrypted size is larger than unencrypted
+        self.unencrypted_length = max_length = kwargs.get('max_length', None)
+        if max_length:
+            kwargs['max_length'] = self.calculate_crypt_max_length(max_length)
+
+        super(BaseEncryptedField, self).__init__(*args, **kwargs)
+
+    def calculate_crypt_max_length(self, unencrypted_length):
+        # TODO: Re-examine if this logic will actually make a large-enough
+        # max-length for unicode strings that have non-ascii characters in them.
+        # For PostGreSQL we might as well always use textfield since there is little
+        # difference (except for length checking) between varchar and text in PG.
+        return len(self.prefix) + len(self.crypt.Encrypt('x' * unencrypted_length))
+
+    def get_crypt_class(self):
+        """
+        Get the Keyczar class to use.
+        The class can be customized with the ENCRYPTED_FIELD_MODE setting. By default,
+        this setting is DECRYPT_AND_ENCRYPT. Set this to ENCRYPT to disable decryption.
+        This is necessary if you are only providing public keys to Keyczar.
+        Returns:
+            keyczar.Encrypter if ENCRYPTED_FIELD_MODE is ENCRYPT.
+            keyczar.Crypter if ENCRYPTED_FIELD_MODE is DECRYPT_AND_ENCRYPT.
+        Override this method to customize the type of Keyczar class returned.
+        """
+
+        crypt_type = getattr(settings, 'ENCRYPTED_FIELD_MODE', 'DECRYPT_AND_ENCRYPT')
+        if crypt_type == 'ENCRYPT':
+            crypt_class_name = 'Encrypter'
+        elif crypt_type == 'DECRYPT_AND_ENCRYPT':
+            crypt_class_name = 'Crypter'
+        else:
+            raise ImproperlyConfigured(
+                'ENCRYPTED_FIELD_MODE must be either DECRYPT_AND_ENCRYPT '
+                'or ENCRYPT, not %s.' % crypt_type)
+        return getattr(keyczar, crypt_class_name)
+
+    def to_python(self, value):
+        if isinstance(self.crypt.primary_key, keyczar.keys.RsaPublicKey):
+            retval = value
+        elif value and (value.startswith(self.prefix)):
+            if hasattr(self.crypt, 'Decrypt'):
+                retval = self.crypt.Decrypt(value[len(self.prefix):])
+                if sys.version_info < (3,):
+                    if retval:
+                        retval = retval.decode('utf-8')
+            else:
+                retval = value
+        else:
+            retval = value
+        return retval
+
+    def get_db_prep_value(self, value, connection, prepared=False):
+        if value and not value.startswith(self.prefix):
+            # We need to encode a unicode string into a byte string, first.
+            # keyczar expects a bytestring, not a unicode string.
+            if sys.version_info < (3,):
+                if type(value) == six.types.UnicodeType:
+                    value = value.encode('utf-8')
+            # Truncated encrypted content is unreadable,
+            # so truncate before encryption
+            max_length = self.unencrypted_length
+            if max_length and len(value) > max_length:
+                warnings.warn("Truncating field %s from %d to %d bytes" % (
+                    self.name, len(value), max_length), EncryptionWarning
+                )
+                value = value[:max_length]
+
+            value = self.prefix + self.crypt.Encrypt(value)
+        return value
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(BaseEncryptedField, self).deconstruct()
+        kwargs['max_length'] = self.unencrypted_length
+        return name, path, args, kwargs
+
+
+class EncryptedTextField(six.with_metaclass(models.SubfieldBase,
+                                            BaseEncryptedField)):
+    def get_internal_type(self):
+        return 'TextField'
+
+    def formfield(self, **kwargs):
+        defaults = {'widget': forms.Textarea}
+        defaults.update(kwargs)
+        return super(EncryptedTextField, self).formfield(**defaults)
+
+    def south_field_triple(self):
+        "Returns a suitable description of this field for South."
+        # We'll just introspect the _actual_ field.
+        from south.modelsinspector import introspector
+        field_class = "django.db.models.fields.TextField"
+        args, kwargs = introspector(self)
+        # That's our definition!
+        return (field_class, args, kwargs)
+
+
+class EncryptedCharField(models.CharField):
+
+    __metaclass__ = models.SubfieldBase
+
+    def __init__(self, *args, **kwargs):
+        super(EncryptedCharField, self).__init__(*args, **kwargs)
+        cipher_type = kwargs.pop('cipher', 'AES')
+        self.encryptor = Encryptor(cipher_type)
+
+    def isEncrypted(self, value):
+        return encrypt_if_not_encrypted(value, self.encryptor)
+
+    def to_python(self, value):
+        return decrypt_if_not_decrypted(value, self.encryptor)
+
+    def encrypt_if_not_encrypted(value, encryptor):
+        if isinstance(value, EncryptedString):
+            return value
+        else:
+            encrypted = encryptor.encrypt(value)
+            return EncryptedString(encrypted)
+
+    def decrypt_if_not_decrypted(value, encryptor):
+        if isinstance(value, DecryptedString):
+            return value
+        else:
+            encrypted = encryptor.decrypt(value)
+            return DecryptedString(encrypted)
+
+class Encryptor(object):
+  def __init__(self, cipher_type):
+    imp = __import__('Crypto.Cipher', globals(), locals(), [cipher_type], -1)
+    self.cipher = getattr(imp, cipher_type).new(settings.SECRET_KEY[:32])
+
+  def decrypt(self, value):
+    #values should always be encrypted no matter what!
+    #raise an error if tthings may have been tampered with
+    return self.cipher.decrypt(binascii.a2b_hex(str(value))).split('\0')[0]
+
+  def encrypt(self, value):
+    if value is not None and not isinstance(value, EncryptedString):
+      padding  = self.cipher.block_size - len(value) % self.cipher.block_size
+      if padding and padding < self.cipher.block_size:
+        value += "\0" + ''.join([random.choice(string.printable) for index in range(padding-1)])
+      value = EncryptedString(binascii.b2a_hex(self.cipher.encrypt(value)))
+    return value
