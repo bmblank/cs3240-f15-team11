@@ -29,6 +29,13 @@ sudo /usr/local/bin/heroku create
 (optionally pass a parameter name to specify the app name)
 The create function will automatically create a git remote called heroku for the working git directory
 
+Create a file 'Procfile' that tells Heroku how to deploy your app. For Django, the Procfile is one line:
+web: gunicorn projectSite.wsgi --log-file -
+
+Now, create a requirements.txt file so Heroku knows what the app's dependencies are:
+Make sure you have the project virtual environment activated!
+pip3 freeze > requirements.txt
+
 To deploy:
 git push heroku master
 If it asks, enter the following information:
