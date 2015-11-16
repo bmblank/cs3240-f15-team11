@@ -5,9 +5,10 @@ from projectSite import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from reports.models import Report
-from .forms import ReportForm
+from .forms import ReportForm, UserForm
 from django.template import RequestContext, loader
 from django.utils import timezone
+
 
 
 def Login(request):
@@ -36,6 +37,8 @@ def Logout(request):
 def Home(request):
     return render(request, "index/home.html", {})
 
+
+
 @login_required
 def ReportList(request):
     reports_list = Report.objects.order_by('title')[:5]
@@ -48,6 +51,12 @@ def ReportList(request):
 def detail(request, report_id):
     r = get_object_or_404(Report, pk=report_id)
     return render(request, 'index/detail.html', {'r': r})
+
+
+def Register(request):
+    user_form = UserForm()
+    return render(request, 'index/register.html', {'user_form': user_form})
+
 
 @login_required
 def create(request):
