@@ -5,7 +5,7 @@
 {% if has_permission_to_view_reports_list %}
     <ul>
     {% for r in has_permission_to_view_reports_list %}
-        <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a></li>
+        <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a><br>Author: {{r.author}}<br>Description: {{r.Short_Description}}</li>
     {% endfor %}
     </ul>
 {% else %}

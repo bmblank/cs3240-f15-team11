@@ -19,9 +19,18 @@ from django.contrib import messages
 
 @login_required
 def Inbox(request):
-    inbox_list = Memo.objects.order_by('subject')
+    inbox_list = Memo.objects.order_by('-created')
+    personal_inbox = []
+    for m in inbox_list:
+        if m.recipient_username == request.user.username:
+            personal_inbox.append(m)
+    print("THIS IS THE PERSONAL INBOX", personal_inbox)
 
-    context = {'inbox_list': inbox_list}
+
+
+
+
+    context = {'personal_inbox': personal_inbox}
     return render(request, 'memos/inbox.html', context)
 
 
@@ -34,9 +43,22 @@ def NewMemo(request):
             memo.sender =request.user
             memo.body = request.POST.get('body')
             memo.subject = request.POST.get('subject')
-            memo.recipient = request.POST.get('recipient')
             memo.created = timezone.now()
-            memo.save()
+            
+            user_list = User.objects.all()
+            user_names = []
+            for u in user_list:
+                user_names.append(u.username)
+
+
+            if memo.recipient_username in user_names:
+                index_val = user_names.index(memo.recipient_username)
+                memo.recipient = User.objects.all()[index_val]
+                print("THIS IS THE MEMO recipient", memo.recipient)
+                memo.save()
+            else:
+                print("NOT A VALID USER!!!")
+
             return render(request, 'index/report.html')
 
     else:

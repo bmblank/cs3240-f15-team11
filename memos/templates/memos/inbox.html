@@ -2,10 +2,10 @@
 
 <p>These are the messages.</p>
 
-{% if inbox_list %}
+{% if personal_inbox %}
     <ul>
-    {% for r in inbox_list %}
-        <li><a href="{% url 'memo_details' r.id %}">{{ r.subject }}</a></li>
+    {% for r in personal_inbox %}
+        <li><a href="{% url 'memo_details' r.id %}">sender: {{r.sender}} ||| recipient: {{r.recipient_username}} |||  {{ r.subject }} ||| {{r.created}}</a></li>
     {% endfor %}
     </ul>
 {% else %}
