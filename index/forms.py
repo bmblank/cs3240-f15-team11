@@ -6,7 +6,7 @@ class ReportForm(forms.ModelForm):
 
     class Meta:
         model = Report
-        fields = ('title', 'Short_Description', 'Detailed_Description', 'Location_of_Event', 'Attachments', 'sensitivity')
+        fields = ('title', 'Short_Description', 'Detailed_Description', 'Location_of_Event', 'Attachments', 'sensitivity', 'group_name')
 
 
 class UserForm(forms.ModelForm):
@@ -15,3 +15,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name','username', 'email', 'password')
+
+class GivePermissionsForm(forms.Form):
+    group = forms.CharField(max_length=200)
+    user = forms.ModelMultipleChoiceField(queryset=User.objects.all())

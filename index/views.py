@@ -8,6 +8,10 @@ from reports.models import Report
 from .forms import ReportForm, UserForm
 from django.template import RequestContext, loader
 from django.utils import timezone
+from django.contrib.auth import models
+from django.contrib.auth.models import User, Group
+from django.contrib import messages
+from .forms import GivePermissionsForm
 
 
 
@@ -37,20 +41,76 @@ def Logout(request):
 def Home(request):
     return render(request, "index/home.html", {})
 
-
-
 @login_required
 def ReportList(request):
-    reports_list = Report.objects.order_by('title')[:5]
+    reports_list = Report.objects.order_by('title')
+    
+    has_permission_to_view_reports_list = []
+
+    valid_groups = request.user.groups.all()
+    valid_group_names = []
+
+    for g in valid_groups:
+        valid_group_names.append(g.name)
+
+
+    print("THE GROUP", valid_group_names)
+
+    for item in reports_list:
+        print(item.group_name)
+        if item.group_name in valid_group_names:
+            print("VALID!!")
+            has_permission_to_view_reports_list.append(item)
+
+    print("HAS PERMISSION", has_permission_to_view_reports_list)
+
+
+
     print(reports_list)
     template = loader.get_template('index/report.html')
-    context = {'reports_list': reports_list}
+    # context = {'reports_list': reports_list}
+    context = {'has_permission_to_view_reports_list': has_permission_to_view_reports_list}
     return render(request, 'index/report.html', context)
 
 @login_required
 def detail(request, report_id):
     r = get_object_or_404(Report, pk=report_id)
     return render(request, 'index/detail.html', {'r': r})
+
+def GivePermissions(request):
+
+    valid_groups = request.user.groups.all()
+    valid_group_names = []
+
+    all_users = User.objects.all()
+
+    for g in valid_groups:
+        valid_group_names.append(g.name)
+
+    if request.method == "POST":
+        permission_form = GivePermissionsForm(request.POST)
+
+        selected_user = request.POST.get("user")
+        selected_group = request.POST.get("group")
+
+        if selected_group in valid_group_names:
+            print("HOORAY, selected group is in valid_group names")
+            possible_group = Group.objects.get(name=selected_group)
+            possible_group.user_set.add(selected_user)
+        else:
+            print("This group does not exist or you do not have permission to add people to this group")
+
+
+
+        print(request.POST.get("user"))
+    else:
+        permission_form = GivePermissionsForm()
+
+
+
+
+
+    return render(request, 'index/givepermissions.html', {'permission_form': permission_form, 'valid_group_names': valid_group_names})
 
 
 def Register(request):
@@ -84,7 +144,30 @@ def create(request):
         if form.is_valid():
             report = form.save(commit=False)
             report.created = timezone.now()
-            report.save()
+            
+            
+
+            #if created == False, means that group already exists
+            new_group, created = Group.objects.get_or_create(name=report.group_name)
+
+            if created == True:
+                new_group.user_set.add(request.user)
+                report.save()
+            else:
+                valid_users = new_group.user_set.all()
+                print("HEEY", valid_users)
+                if request.user not in valid_users:
+                    print("You are not allowed to post to this group.")
+                    # messages.error(request, 'Document deleted.')
+                    # pass
+                else:
+                    report.save()
+
+                # new_group.save()
+                # current_user = request.user
+                # current_user.groups.add(new_group)
+                # current_user.save()
+
             return render(request, 'index/report.html')
 
     else:

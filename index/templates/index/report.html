@@ -2,9 +2,9 @@
 
 <p>These are the reports.</p>
 
-{% if reports_list %}
+{% if has_permission_to_view_reports_list %}
     <ul>
-    {% for r in reports_list %}
+    {% for r in has_permission_to_view_reports_list %}
         <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a></li>
     {% endfor %}
     </ul>

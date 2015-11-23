@@ -25,6 +25,9 @@ class Report(models.Model):
     Attachments = models.FileField(upload_to='report', blank=True)
     sensitivity = models.IntegerField(choices=PRIORITY_CHOICES)
     created = models.DateTimeField(auto_now_add=True)
+    group_name = models.CharField(max_length=200, default='public')
+
+
     def __str__(self):              # __unicode__ on Python 2
         return self.title
     def was_published_recently(self):
