@@ -4,6 +4,7 @@
 
 <a href="/report/">Reports</a>
 <a href="/givepermissions/">Grant Permissions</a>
+<a href="{% url 'inbox_list' %}">Inbox</a>
 {% if user.is_authenticated %}
     <a href="/logout/">Logout</a>
 {% else %}

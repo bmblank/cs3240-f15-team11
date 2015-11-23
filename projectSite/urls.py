@@ -24,6 +24,7 @@ urlpatterns = [
 
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^reports/', include('reports.urls')),
+    url(r'^memos/', include('memos.urls')),
     url(r'^', include('index.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT})
