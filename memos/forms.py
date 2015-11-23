@@ -1,12 +1,13 @@
 from .models import Memo
 from django import forms
 from django.contrib.auth.models import User
+from django.db import models
 
 class MemoForm(forms.ModelForm):
 
     class Meta:
         model = Memo
-        fields = ('sender', 'recipient', 'subject', 'body', 'cc_myself', )
+        fields = ('recipient_username', 'subject', 'body', 'cc_myself', )
 
         sender = forms.CharField(label="Sender", required=True)
         recipient = forms.CharField(label="Recipient", required=True)
@@ -14,3 +15,5 @@ class MemoForm(forms.ModelForm):
         body = forms.CharField(label="Message Body", widget=forms.Textarea)
         cc_myself = forms.BooleanField(label="CC Myself", required=False)
         encrypt = forms.BooleanField(label="Encrypt Message", required=False)
+
+

@@ -4,6 +4,7 @@ from .models import Memo
 
 
 class MemoAdmin(admin.ModelAdmin):
-    list_display = ('sender', 'recipient', 'subject', 'body', 'encrypt')
+
+    list_display = ('sender', 'recipient', 'subject', 'body', 'encrypt', 'created')
 
 admin.site.register(Memo, MemoAdmin)

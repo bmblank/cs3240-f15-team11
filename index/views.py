@@ -143,6 +143,7 @@ def create(request):
         form = ReportForm(request.POST)
         if form.is_valid():
             report = form.save(commit=False)
+            report.author = request.user
             report.created = timezone.now()
             
             

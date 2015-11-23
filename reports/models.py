@@ -1,5 +1,6 @@
 import datetime
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 from django.db import models
 from django.utils import timezone
@@ -26,6 +27,7 @@ class Report(models.Model):
     sensitivity = models.IntegerField(choices=PRIORITY_CHOICES)
     created = models.DateTimeField(auto_now_add=True)
     group_name = models.CharField(max_length=200, default='public')
+    author = models.ForeignKey(User, null=True, related_name='author')
 
 
     def __str__(self):              # __unicode__ on Python 2

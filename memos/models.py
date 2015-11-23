@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 from Crypto.PublicKey import RSA
@@ -17,6 +18,7 @@ class Memo(models.Model):
     body = models.TextField(max_length=1000, verbose_name="Message Body")
     cc_myself = models.BooleanField(verbose_name="CC Myself", null=False, blank=False)
     encrypt = models.BooleanField(verbose_name="Encrypt Message", null=False, blank=False)
+    created = models.DateTimeField(default=None)
 
     def encryptBody(self):
         publicKey = RSA.importKey(self.recipient.publicKey)
