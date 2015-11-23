@@ -44,8 +44,6 @@ INSTALLED_APPS = [
 
 
 LOGIN_URL = '/login/'
-# Postman extra settings
-POSTMAN_DISALLOW_ANONYMOUS = True
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',

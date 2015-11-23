@@ -5,6 +5,9 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
+from Crypto.PublicKey import RSA
+from Crypto import Random
+
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 
@@ -90,6 +93,18 @@ class Message(models.Model):
         ordering = ['-sent_at']
         verbose_name = _("Message")
         verbose_name_plural = _("Messages")
+
+    """ENCRYPTION"""
+    def enc_body(self):
+        encrypted = AUTH_USER_MODEL.public_key(self.body)
+        return encrypted
+
+    body = property(enc_body)
+
+    """def dec_body(self, privateKey):
+        encrypted = value
+        decrypted = privateKey(encrypted)
+        return decrypted"""
 
 
 def inbox_count_for(user):
