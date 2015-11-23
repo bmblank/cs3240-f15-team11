@@ -21,7 +21,9 @@ class Memo(models.Model):
     def encryptBody(self):
         publicKey = RSA.importKey(self.recipient.publicKey)
         self.body = publicKey.encrypt(self.body)
+        return self.body
 
     def decryptBody(self):
         privateKey = RSA.importKey(self.private)
         self.body = privateKey.decrypt(self.body)
+        return self.body

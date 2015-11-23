@@ -31,6 +31,7 @@ def NewMemo(request):
         form = MemoForm(request.POST)
         sender = request.user
         if form.is_valid():
+            Memo.encryptBody()
             memo = form.save(commit=False, sender=request.user)
             memo.save()
             return render(request, 'index/memos.html')
