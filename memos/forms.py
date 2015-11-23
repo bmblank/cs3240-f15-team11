@@ -6,4 +6,4 @@ class MemoForm(forms.ModelForm):
 
     class Meta:
         model = Memo
-        fields = ('sender', 'recepient', 'subject', 'body')
+        fields = ('recipient', 'subject', 'body')

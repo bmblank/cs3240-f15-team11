@@ -31,6 +31,11 @@ def NewMemo(request):
         form = MemoForm(request.POST)
         if form.is_valid():
             memo = form.save(commit=False)
+            memo.sender =request.user
+            memo.body = request.POST.get('body')
+            memo.subject = request.POST.get('subject')
+            memo.recipient = request.POST.get('recipient')
+            memo.created = timezone.now()
             memo.save()
             return render(request, 'index/report.html')
 
