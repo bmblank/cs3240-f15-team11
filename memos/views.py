@@ -29,10 +29,11 @@ def Inbox(request):
 def NewMemo(request):
     if request.method == "POST":
         form = MemoForm(request.POST)
+        sender = request.user
         if form.is_valid():
-            memo = form.save(commit=False)
+            memo = form.save(commit=False, sender=request.user)
             memo.save()
-            return render(request, 'index/report.html')
+            return render(request, 'index/memos.html')
 
     else:
         form = MemoForm
