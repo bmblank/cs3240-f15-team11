@@ -15,10 +15,12 @@ Including another URLconf
     3. Add a URL to urlpatterns:  url(r'^report/', include(report_urls))
 """
 
-from django.conf.urls import include, url
+from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
+from django.views.static import serve
+
 
 import postman
 
@@ -29,6 +31,6 @@ urlpatterns = [
     url(r'^', include('index.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^messages/', include('postman.urls', namespace='postman', app_name='postman')),
-    url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT})
+    url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT})
 
 ]

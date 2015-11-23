@@ -1,10 +1,52 @@
-<h1>Home</h1>
+<style>
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
 
-<p>This is home.</p>
+li {
+    float: left;
+}
 
-<a href="/report/">Reports</a>
-{% if user.is_authenticated %}
-    <a href="/logout/">Logout</a>
-{% else %}
-    <a href="/login/?next={{ request.path }}">Login</a>
-{% endif %}
+a:link, a:visited {
+    display: block;
+    width: 202px;
+    font-weight: bold;
+    color: #FFFFFF;
+    background-color: #98bf21;
+    text-align: center;
+    padding: 5px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+a:hover, a:active {
+    background-color: #7A991A;
+}
+</style>
+</head>
+<body>
+
+<ul>
+  <li><a href="/home/">Home</a></li>
+  <li><a href="/report/">Reports</a></li>
+  <li><a href="/message/">Messages</a></li>
+  {% if user.is_authenticated %}
+    <li><a href="/logout/">Logout</a></li>
+  {% else %}
+    <li><a href="/login/?next={{ request.path }}">Login</a></li>
+  {% endif %}
+</ul>
+
+
+<img src="" alt="Secure Witness Banner" style="width:851px;height:315px;">
+<p><center>Welcome to Secure Witness!</center></p>
+
+<ul>
+    <li><a href="/about/">Getting Started</a></li>
+    <li><a href="/mission/">Mission Statement</a></li>
+    <li><a href="/security/">Security</a></li>
+    <li><a href="/contact/">Contact Us</a></li>
+</ul>

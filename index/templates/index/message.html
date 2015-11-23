@@ -1,0 +1,24 @@
+<h1>SWAG</h1>
+
+<p>Here are your messages.</p>
+
+{% if reports_list %}
+    <ul>
+    {% for r in reports_list %}
+        <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You currently do not have any messages.</p>
+{% endif %}
+
+
+{% if user.is_authenticated %}
+    <a href="/logout/">Logout</a>
+{% else %}
+    <a href="/login/?next={{ request.path }}">Login</a>
+{% endif %}
+<a href="/home/">Home</a>
+<a href="{% url 'create' %}">New Message</a>
+
+

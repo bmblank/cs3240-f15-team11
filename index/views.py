@@ -37,12 +37,36 @@ def Home(request):
     return render(request, "index/home.html", {})
 
 @login_required
+def About(request):
+    return render(request, "index/about.html", {})
+
+@login_required
+def Mission(request):
+    return render(request, "index/mission.html", {})
+
+@login_required
+def Security(request):
+    return render(request, "index/security.html", {})
+
+@login_required
+def Contact(request):
+    return render(request, "index/contact.html", {})
+
+@login_required
 def ReportList(request):
     reports_list = Report.objects.order_by('title')[:5]
     print(reports_list)
     template = loader.get_template('index/report.html')
     context = {'reports_list': reports_list}
     return render(request, 'index/report.html', context)
+
+@login_required
+def MessageList(request):
+    message_list = Report.objects.order_by('title')[:5]
+    print(message_list)
+    template = loader.get_template('index/message.html')
+    context = {'message_list': message_list}
+    return render(request, 'index/message.html', context)
 
 @login_required
 def detail(request, report_id):
