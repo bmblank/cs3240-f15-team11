@@ -90,13 +90,36 @@ def GivePermissions(request):
     if request.method == "POST":
         permission_form = GivePermissionsForm(request.POST)
 
-        selected_user = request.POST.get("user")
+        selected_user = str(request.POST.get("user"))
+        print("SELECTED USER NAME: ", selected_user)
+        selected_user_obj = User.objects.get(pk=selected_user)
+        print("SELCTED USER OBJ: ", selected_user_obj, type(selected_user_obj))
+
+
+
         selected_group = request.POST.get("group")
 
         if selected_group in valid_group_names:
             print("HOORAY, selected group is in valid_group names")
-            possible_group = Group.objects.get(name=selected_group)
-            possible_group.user_set.add(selected_user)
+
+
+            if selected_group == "SiteManager":
+                for g in valid_group_names:
+                    print(g)
+                    possible_group = Group.objects.get(name=g)
+                    print(possible_group.user_set.all())
+                    if selected_user_obj not in possible_group.user_set.all():
+                        print("ADD ME TO THIS GROUP")
+                        possible_group.user_set.add(selected_user_obj)
+
+                    else:
+                        print("ALREADY IN THIS GROUP")
+                    #     print(selected_user, )
+                        # possible_group.user_set.add(selected_user)
+
+            else:
+                possible_group = Group.objects.get(name=selected_group)
+                possible_group.user_set.add(selected_user)
         else:
             print("This group does not exist or you do not have permission to add people to this group")
 
@@ -123,6 +146,10 @@ def Register(request):
         if user_form.is_valid() :
             user = user_form.save()
             user.set_password(user.password)
+
+            public_group = Group.objects.get(name='Public')
+            public_group.user_set.add(user)
+
             user.save()
             registered = True
             print("USER SUCCESS!")
@@ -152,7 +179,18 @@ def create(request):
             new_group, created = Group.objects.get_or_create(name=report.group_name)
 
             if created == True:
+                print("TRUEEEEEEEEEEEEEEEEE")
                 new_group.user_set.add(request.user)
+
+                admin_users = Group.objects.get(name='SiteManager').user_set.all()
+                print("ADMIN USERS HERE: ", admin_users)
+                for member in admin_users:
+                    print(type(member), type(request.user))
+                    new_group.user_set.add(member)
+                    print("NEW GROUP: ", new_group.user_set.all())
+                    new_group.save()
+
+
                 report.save()
             else:
                 valid_users = new_group.user_set.all()
