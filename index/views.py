@@ -103,7 +103,8 @@ def detail(request, report_id):
         authorIsViewing = True
     else:
         print("Some random rando is looking at a random report")
-    return render(request, 'index/detail.html', {'r': r, 'authorIsViewing': authorIsViewing, 'siteManagerIsViewing': siteManagerIsViewing})
+    return render(request, 'index/detail.html', {'r': r, 'authorIsViewing': authorIsViewing, 'siteManagerIsViewing': siteManagerIsViewing})    
+
 
 @login_required
 def EditReport(request, report_id):
@@ -188,6 +189,9 @@ def Suspension(request):
     
     elif 'unsuspend_button' in request.POST:
         unsuspension_form = SuspensionForm(request.POST)
+        # selected_user = str(request.POST.get("suspended_users"))
+        if request.POST.get("suspended_users") == None:
+            return redirect('index.views.Suspension')
         selected_user = str(request.POST.get("suspended_users"))
         print("SELECTED USER NAME FOR SUSPENSION: ", selected_user)
         selected_user_obj = User.objects.get(pk=selected_user)
