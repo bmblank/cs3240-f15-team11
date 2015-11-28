@@ -69,3 +69,7 @@ def NewMemo(request):
 def MemoDetails(request, memo_id):
     r = get_object_or_404(Memo, pk=memo_id)
     return render(request, 'memos/memodetails.html', {'r': r})
+
+def DeleteMemo(request, memo_id):
+    Memo.objects.filter(id=memo_id).delete()
+    return redirect('memos.views.Inbox')
