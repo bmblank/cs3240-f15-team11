@@ -1,0 +1,17 @@
+<h1>{{ f.pure_folder_name }}</h1>
+
+
+
+{% if reports_in_folder %}
+<p>These are the reports in this folder.</p>
+    <ul>
+    {% for r in reports_in_folder %}
+        <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a><br>Author: {{r.author}}<br>Description: {{r.Short_Description}}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>This folder is empty.</p>
+{% endif %}
+
+<a href="{% url 'remove_folder' f.id %}">Remove this folder</a>
+<a href="{% url 'delete_folder_reports' f.id %}">Delete the reports in this folder</a>

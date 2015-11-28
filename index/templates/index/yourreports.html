@@ -1,0 +1,38 @@
+<h1>Your reports </h1>
+
+
+
+
+{% if your_folders_list %}
+<p>These are the folders you have.</p>
+    <ul>
+    {% for f in your_folders_list %}
+        <li><a href="{% url 'folder_details' f.id %}">{{ f.pure_folder_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You have not created any folders.</p>
+{% endif %}
+
+
+{% if your_unsorted_reports %}
+<p>These are the unsorted reports you have created.</p>
+    <ul>
+    {% for r in your_unsorted_reports %}
+        <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a><br>Author: {{r.author}}<br>Description: {{r.Short_Description}}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You have not created any reports or all your reports are in your folders.</p>
+{% endif %}
+
+<a href="/yourreports/createfolder">Create Folder</a>
+{% if user.is_authenticated %}
+    <a href="/logout/">Logout</a>
+{% else %}
+    <a href="/login/?next={{ request.path }}">Login</a>
+{% endif %}
+<a href="/home/">Home</a>
+<a href="{% url 'create' %}">Create Report</a>
+
+

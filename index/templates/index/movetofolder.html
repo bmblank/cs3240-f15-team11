@@ -1,0 +1,9 @@
+This page lets you create a folder
+
+{% block content %}
+    <h1>Move this file to a folder</h1>
+    <form method="POST">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-default">Move to this folder</button>
+    </form>
+{% endblock %}

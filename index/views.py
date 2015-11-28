@@ -4,8 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from projectSite import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
-from reports.models import Report
-from .forms import ReportForm, UserForm
+from reports.models import Report, Folder
+from .forms import ReportForm, UserForm, FolderForm, MoveToFolderForm
 from django.template import RequestContext, loader
 from django.utils import timezone
 from django.contrib.auth import models
@@ -56,6 +56,31 @@ def checkIfUserisSM(request):
         return False
 
 @login_required
+def YourReports(request):
+    your_reports_list = []
+    all_reports = Report.objects.all()
+    your_folders_list = []
+    all_folders = Folder.objects.all()
+
+    your_unsorted_reports = []
+
+    for folder in all_folders:
+        if folder.creator.username == request.user.username:
+            your_folders_list.append(folder)
+
+    for rep in all_reports:
+        if rep.author.username == request.user.username:
+            your_reports_list.append(rep)
+
+    for rep in your_reports_list:
+        if rep.folder == None:
+            your_unsorted_reports.append(rep)
+    print("ALL OF THE REPORTS YOU CREATED: ", your_reports_list)
+    print("ALL OF THE Folders YOU CREATED: ", your_folders_list)
+
+    return render(request, 'index/yourreports.html', {'your_reports_list': your_reports_list, 'your_folders_list': your_folders_list, 'your_unsorted_reports': your_unsorted_reports})
+
+@login_required
 def ReportList(request):
 
     userIsSiteManager = checkIfUserisSM(request)
@@ -79,8 +104,6 @@ def ReportList(request):
 
     print("HAS PERMISSION", has_permission_to_view_reports_list)
 
-
-
     print(reports_list)
     template = loader.get_template('index/report.html')
     # context = {'reports_list': reports_list}
@@ -90,6 +113,32 @@ def ReportList(request):
 def isSiteManager(user):
     return user.groups.filter(name='SiteManager').exists()
 
+
+@login_required
+def FolderDetails(request, folder_id):
+    f = get_object_or_404(Folder, pk=folder_id)
+    reports_in_folder = Report.objects.filter(folder=f)
+    return render(request, 'index/folderdetail.html', {'f': f, 'reports_in_folder': reports_in_folder})
+
+@login_required
+def RemoveFolder(request, folder_id):
+    f = get_object_or_404(Folder, pk=folder_id)
+    reports_in_folder = Report.objects.filter(folder=f)
+    for rep in reports_in_folder:
+        rep.folder=None
+        rep.save()
+    Folder.objects.filter(id=f.id).delete() 
+    return redirect('index.views.YourReports')     
+
+@login_required
+def DeleteReportsInFolder(request, folder_id):
+    f = get_object_or_404(Folder, pk=folder_id)
+    reports_in_folder = Report.objects.filter(folder=f)
+    for rep in reports_in_folder:
+        Report.objects.filter(id=rep.id).delete()   
+    return redirect('index.views.FolderDetails', folder_id=folder_id)     
+
+
 @login_required
 def detail(request, report_id):
     r = get_object_or_404(Report, pk=report_id)
@@ -98,12 +147,25 @@ def detail(request, report_id):
 
     siteManagerIsViewing = isSiteManager(request.user)
 
+    if request.method == "POST":
+        form = MoveToFolderForm(request.POST)
+        possibly_new_folder, created = Folder.objects.get_or_create(Folder_Name=request.user.username+request.POST.get('folder_to_move_to'))
+        if created:
+            possibly_new_folder.creator=request.user
+            possibly_new_folder.save()
+
+        r.folder = possibly_new_folder
+        r.save()
+        redirect('index.views.YourReports')
+    else:
+        form = MoveToFolderForm()
+
     if r.author.username == request.user.username:
         print("HEY THE AUTHOR IS LOOKING AT THE REPORT THEY CREATED")
         authorIsViewing = True
     else:
         print("Some random rando is looking at a random report")
-    return render(request, 'index/detail.html', {'r': r, 'authorIsViewing': authorIsViewing, 'siteManagerIsViewing': siteManagerIsViewing})    
+    return render(request, 'index/detail.html', {'r': r, 'authorIsViewing': authorIsViewing, 'siteManagerIsViewing': siteManagerIsViewing, 'form':form})    
 
 
 @login_required
@@ -122,13 +184,19 @@ def EditReport(request, report_id):
         form = ReportForm(instance=r)
     return render(request, 'index/create.html', {'form': form})
 
+@login_required
+def RemoveReportFromFolder(request, report_id):
+    r = get_object_or_404(Report, pk=report_id)
+    r.folder = None
+    r.save()
+    return redirect('index.views.YourReports')
 
 @login_required
 def DeleteReport(request, report_id):
     Report.objects.filter(id=report_id).delete()
     return redirect('index.views.ReportList')
 
-
+@login_required
 def GivePermissions(request):
 
     valid_groups = request.user.groups.all()
@@ -261,7 +329,6 @@ def create(request):
                     print("NEW GROUP: ", new_group.user_set.all())
                     new_group.save()
 
-
                 report.save()
             else:
                 valid_users = new_group.user_set.all()
@@ -287,3 +354,30 @@ def create(request):
     else:
         form = ReportForm
     return render(request, 'index/create.html', {'form': form})
+
+@login_required
+def CreateFolder(request):
+    if request.method == "POST":
+        form = FolderForm(request.POST)
+        if form.is_valid():
+            folder = form.save(commit=False)
+            folder.creator = request.user
+
+            if request.POST.get("Folder_Name") == None:
+                return redirect('index.views.CreateFolder')
+            else:
+                new_folder, created = Folder.objects.get_or_create(Folder_Name=request.user.username+'_____'+request.POST.get("Folder_Name"))
+                if created == False:
+                    print("This folder already exists.")
+                else:
+                    print("A new folder was created!")
+                    new_folder.creator = request.user
+                    new_folder.save()
+            return redirect('index.views.YourReports')
+
+
+
+            
+    else:
+        form = FolderForm
+    return render(request, 'index/createfolder.html', {'form': form})

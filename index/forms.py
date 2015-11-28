@@ -1,4 +1,4 @@
-from reports.models import Report
+from reports.models import Report, Folder
 from django import forms
 from django.contrib.auth.models import User
 
@@ -6,7 +6,7 @@ class ReportForm(forms.ModelForm):
 
     class Meta:
         model = Report
-        fields = ('title', 'Short_Description', 'Detailed_Description', 'Location_of_Event', 'Attachments', 'sensitivity', 'group_name')
+        fields = ('title', 'Short_Description', 'Detailed_Description', 'Location_of_Event', 'Attachments', 'Report_is_Public', 'group_name')
 
 
 class UserForm(forms.ModelForm):
@@ -25,3 +25,12 @@ class SuspensionForm(forms.Form):
 
 class UnsuspensionForm(forms.Form):
     suspended_users = forms.ModelMultipleChoiceField(queryset=User.objects.filter(is_active=False))
+
+
+class MoveToFolderForm(forms.Form):
+    folder_to_move_to = forms.CharField(max_length=200)
+
+class FolderForm(forms.ModelForm):
+    class Meta:
+        model = Folder
+        fields = ('Folder_Name',)
