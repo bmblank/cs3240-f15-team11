@@ -11,7 +11,8 @@ from django.utils import timezone
 from django.contrib.auth import models
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from .forms import GivePermissionsForm
+from .forms import GivePermissionsForm, SuspensionForm, UnsuspensionForm
+from django.contrib.auth.decorators import user_passes_test
 
 
 
@@ -39,7 +40,8 @@ def Logout(request):
 
 @login_required
 def Home(request):
-    return render(request, "index/home.html", {})
+    userIsSiteManager = isSiteManager(request.user)
+    return render(request, "index/home.html", {"userIsSiteManager": userIsSiteManager})
 
 def checkIfUserisSM(request):
     valid_groups = request.user.groups.all()
@@ -131,7 +133,7 @@ def GivePermissions(request):
     valid_groups = request.user.groups.all()
     valid_group_names = []
 
-    all_users = User.objects.all()
+    # all_users = User.objects.filter(is_active=True)
 
 
     for g in valid_groups:
@@ -169,12 +171,38 @@ def GivePermissions(request):
     else:
         permission_form = GivePermissionsForm()
 
-
-
-
-
     return render(request, 'index/givepermissions.html', {'permission_form': permission_form, 'valid_group_names': valid_group_names})
 
+
+@user_passes_test(isSiteManager, login_url='/home/')
+def Suspension(request):
+    if 'suspend_button' in request.POST:
+        suspension_form = SuspensionForm(request.POST)
+        selected_user = str(request.POST.get("active_users"))
+        print("SELECTED USER NAME FOR SUSPENSION: ", selected_user)
+        selected_user_obj = User.objects.get(pk=selected_user)
+        print("SELCTED USER OBJ for SUSPENSION: ", selected_user_obj, type(selected_user_obj))
+        selected_user_obj.is_active=False
+        selected_user_obj.save()
+        return redirect('index.views.Home')
+    
+    elif 'unsuspend_button' in request.POST:
+        unsuspension_form = SuspensionForm(request.POST)
+        selected_user = str(request.POST.get("suspended_users"))
+        print("SELECTED USER NAME FOR SUSPENSION: ", selected_user)
+        selected_user_obj = User.objects.get(pk=selected_user)
+        print("SELCTED USER OBJ for SUSPENSION: ", selected_user_obj, type(selected_user_obj))
+        selected_user_obj.is_active=True
+        selected_user_obj.save()
+        return redirect('index.views.Home')
+
+
+    else:
+
+        suspension_form = SuspensionForm()
+        unsuspension_form = UnsuspensionForm()
+
+    return render(request, 'index/suspension.html', {'suspension_form': suspension_form, 'unsuspension_form': unsuspension_form})
 
 def Register(request):
     context = RequestContext(request)
@@ -187,7 +215,8 @@ def Register(request):
             user = user_form.save()
             user.set_password(user.password)
 
-            public_group = Group.objects.get(name='Public')
+            # public_group = Group.objects.get(name='Public')
+            public_group, created = Group.objects.get_or_create(name='Public')
             public_group.user_set.add(user)
 
             user.save()

@@ -18,4 +18,10 @@ class UserForm(forms.ModelForm):
 
 class GivePermissionsForm(forms.Form):
     group = forms.CharField(max_length=200)
-    user = forms.ModelMultipleChoiceField(queryset=User.objects.all())
+    user = forms.ModelMultipleChoiceField(queryset=User.objects.filter(is_active=True))
+
+class SuspensionForm(forms.Form):
+    active_users = forms.ModelMultipleChoiceField(queryset=User.objects.filter(is_active=True))
+
+class UnsuspensionForm(forms.Form):
+    suspended_users = forms.ModelMultipleChoiceField(queryset=User.objects.filter(is_active=False))

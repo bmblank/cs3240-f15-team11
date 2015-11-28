@@ -1,0 +1,16 @@
+{% block content %}
+
+	{% if suspension_form != None %}
+    <h1>This is the page where you can give suspensions to other </h1>
+    <form method="POST" class="post-form">{% csrf_token %}
+        {{ suspension_form.as_p }}
+        <button type="submit" name="suspend_button" class="save btn btn-default">Suspend</button>
+    </form>
+    {% endif %}
+    {% if unsuspension_form != None %}
+    <form method="POST" class="post-form">{% csrf_token %}
+        {{ unsuspension_form.as_p }}
+        <button type="submit" name="unsuspend_button" class="save btn btn-default">Unsuspend</button>
+    </form>
+    {% endif %}
+{% endblock %}
