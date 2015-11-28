@@ -110,7 +110,13 @@ def GivePermissions(request):
     if request.method == "POST":
         permission_form = GivePermissionsForm(request.POST)
 
-        selected_user = request.POST.get("user")
+        selected_user = str(request.POST.get("user"))
+        print("SELECTED USER NAME: ", selected_user)
+        selected_user_obj = User.objects.get(pk=selected_user)
+        print("SELCTED USER OBJ: ", selected_user_obj, type(selected_user_obj))
+
+
+
         selected_group = request.POST.get("group")
 
         if selected_group in valid_group_names:
@@ -175,7 +181,18 @@ def create(request):
             new_group, created = Group.objects.get_or_create(name=report.group_name)
 
             if created == True:
+                print("TRUEEEEEEEEEEEEEEEEE")
                 new_group.user_set.add(request.user)
+
+                admin_users = Group.objects.get(name='SiteManager').user_set.all()
+                print("ADMIN USERS HERE: ", admin_users)
+                for member in admin_users:
+                    print(type(member), type(request.user))
+                    new_group.user_set.add(member)
+                    print("NEW GROUP: ", new_group.user_set.all())
+                    new_group.save()
+
+
                 report.save()
             else:
                 valid_users = new_group.user_set.all()
