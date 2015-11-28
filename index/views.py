@@ -41,8 +41,22 @@ def Logout(request):
 def Home(request):
     return render(request, "index/home.html", {})
 
+def checkIfUserisSM(request):
+    valid_groups = request.user.groups.all()
+    valid_group_names = []
+
+    for g in valid_groups:
+        valid_group_names.append(g.name)
+
+    if 'SiteManager' in valid_group_names:
+        return True
+    else:
+        return False
+
 @login_required
 def ReportList(request):
+
+    userIsSiteManager = checkIfUserisSM(request)
     reports_list = Report.objects.order_by('title')
     
     has_permission_to_view_reports_list = []
@@ -53,12 +67,11 @@ def ReportList(request):
     for g in valid_groups:
         valid_group_names.append(g.name)
 
-
     print("THE GROUP", valid_group_names)
 
     for item in reports_list:
         print(item.group_name)
-        if item.group_name in valid_group_names:
+        if item.group_name in valid_group_names or userIsSiteManager:
             print("VALID!!")
             has_permission_to_view_reports_list.append(item)
 
@@ -84,8 +97,15 @@ def GivePermissions(request):
 
     all_users = User.objects.all()
 
+
     for g in valid_groups:
         valid_group_names.append(g.name)
+
+    if 'SiteManager' in valid_group_names:
+        valid_groups = Group.objects.all()
+        valid_group_names = []
+        for g in valid_groups:
+            valid_group_names.append(g.name)
 
     if request.method == "POST":
         permission_form = GivePermissionsForm(request.POST)
@@ -97,6 +117,7 @@ def GivePermissions(request):
             print("HOORAY, selected group is in valid_group names")
             possible_group = Group.objects.get(name=selected_group)
             possible_group.user_set.add(selected_user)
+
         else:
             print("This group does not exist or you do not have permission to add people to this group")
 
@@ -123,6 +144,10 @@ def Register(request):
         if user_form.is_valid() :
             user = user_form.save()
             user.set_password(user.password)
+
+            public_group = Group.objects.get(name='Public')
+            public_group.user_set.add(user)
+
             user.save()
             registered = True
             print("USER SUCCESS!")
@@ -146,8 +171,6 @@ def create(request):
             report.author = request.user
             report.created = timezone.now()
             
-            
-
             #if created == False, means that group already exists
             new_group, created = Group.objects.get_or_create(name=report.group_name)
 
@@ -157,7 +180,10 @@ def create(request):
             else:
                 valid_users = new_group.user_set.all()
                 print("HEEY", valid_users)
-                if request.user not in valid_users:
+
+                userIsSiteManager = checkIfUserisSM(request)
+
+                if request.user not in valid_users and not userIsSiteManager:
                     print("You are not allowed to post to this group.")
                     # messages.error(request, 'Document deleted.')
                     # pass
