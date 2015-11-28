@@ -59,7 +59,7 @@ def NewMemo(request):
             else:
                 print("NOT A VALID USER!!!")
 
-            return render(request, 'index/report.html')
+            return redirect('memos.views.Inbox')
 
     else:
         form = MemoForm
