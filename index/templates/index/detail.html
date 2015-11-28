@@ -14,3 +14,14 @@
 {{r.Attachments}}
 <h2>Group</h2>
 {{r.group_name}}
+
+
+<br><br>
+{% if authorIsViewing%}
+	<a href="{% url 'edit_report' report_id=r.pk %}">Edit Report</a>
+{% endif %}
+
+{% if authorIsViewing or siteManagerIsViewing%}
+	<a href="{% url 'delete_report' report_id=r.pk %}">Delete Report</a>
+{% endif %}
+

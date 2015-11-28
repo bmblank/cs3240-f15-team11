@@ -85,10 +85,46 @@ def ReportList(request):
     context = {'has_permission_to_view_reports_list': has_permission_to_view_reports_list}
     return render(request, 'index/report.html', context)
 
+def isSiteManager(user):
+    return user.groups.filter(name='SiteManager').exists()
+
 @login_required
 def detail(request, report_id):
     r = get_object_or_404(Report, pk=report_id)
-    return render(request, 'index/detail.html', {'r': r})
+
+    authorIsViewing = False
+
+    siteManagerIsViewing = isSiteManager(request.user)
+
+    if r.author.username == request.user.username:
+        print("HEY THE AUTHOR IS LOOKING AT THE REPORT THEY CREATED")
+        authorIsViewing = True
+    else:
+        print("Some random rando is looking at a random report")
+    return render(request, 'index/detail.html', {'r': r, 'authorIsViewing': authorIsViewing, 'siteManagerIsViewing': siteManagerIsViewing})
+
+@login_required
+def EditReport(request, report_id):
+    r = get_object_or_404(Report, pk=report_id)
+
+    if request.method == "POST":
+        form = ReportForm(request.POST, instance=r)
+        if form.is_valid():
+            r = form.save(commit=False)
+            r.author = request.user
+            r.created = timezone.now()
+            r.save()
+            return redirect('index.views.detail', report_id=r.pk)
+    else:
+        form = ReportForm(instance=r)
+    return render(request, 'index/create.html', {'form': form})
+
+
+@login_required
+def DeleteReport(request, report_id):
+    Report.objects.filter(id=report_id).delete()
+    return redirect('index.views.ReportList')
+
 
 def GivePermissions(request):
 
@@ -212,7 +248,8 @@ def create(request):
                 # current_user.groups.add(new_group)
                 # current_user.save()
 
-            return render(request, 'index/report.html')
+            # return render(request, 'index/report.html')
+            return redirect('index.views.detail', report_id=report.pk)
 
     else:
         form = ReportForm
