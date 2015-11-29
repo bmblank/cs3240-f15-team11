@@ -1,0 +1,116 @@
+<style>
+
+    body {
+        font-family: "Trebuchet MS", Verdana, sans-serif;
+        font-size: 16px;
+        background-color: blue;
+        color: #ffffff;
+        padding: 3px;
+    }
+
+    #main {
+        padding: 5px;
+        padding-left:  15px;
+        padding-right: 15px;
+        background-color: #ffffff;
+        border-radius: 0 0 5px 5px;
+    }
+
+    h1 {
+        font-family: Georgia, serif;
+        border-bottom: 3px solid #cc9900;
+        color: #ffffff;
+        font-size: 30px;
+    }
+    #nav {
+        width: 100%;
+        float: left;
+        margin: 0 0 1em 0;
+        padding: 0;
+        background-color: #FFA500;
+        border-bottom: 1px solid #ccc;
+    }
+    #nav ul {
+        list-style: none;
+        width: 800px;
+        margin: 0 auto;
+        padding: 0;
+    }
+    li {
+        float: left;
+    }
+    li a.one {
+        display: block;
+        padding: 8px 15px;
+        text-decoration: none;
+        font-weight: bold;
+        color: #FFA500;
+        border-right: 1px solid #ccc;
+    }
+    li:first-child a {
+        border-left: 1px solid #ccc;
+    }
+    li a.one:hover {
+        color: #ffffff;
+        background-color: #cc9900;
+    }
+    a.one:link, a.one:visited {
+        display: block;
+        width: 201px;
+        font-weight: bold;
+        color: #ffffff;
+        background-color: #FFA500;
+        text-align: center;
+        padding: 5px;
+        text-decoration: none;
+        text-transform: uppercase;
+    }
+    a.one:hover, a.one:active {
+        background-color: #7A991A;
+    }
+</style>
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Security</title>
+
+    <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<ul id="nav">
+      <li><a class="one" href="/home/">Home</a></li>
+      <li><a class="one" href="/report/">Reports</a></li>
+      <li><a class="one" href="/message/">Messages</a></li>
+      {% if user.is_authenticated %}
+        <li><a class="one" href="/logout/">Logout</a></li>
+      {% else %}
+        <li><a class="one" href="/login/?next={{ request.path }}">Login</a></li>
+      {% endif %}
+</ul>
+
+<h1>Security</h1>
+
+<p><b>At SecureShare, you security is our our priority</b><br>
+Whether you're sharing photos with family and friends over the air,
+    or looking to store and transmit sensitive information between select
+    recipients, SecureShare provides a one-stop-shop for all your needs.<br><br>
+<i>SecureShare uses advanced encryption methods in order to protect <b>you</b> online.</i><br><br>
+With locally stored, unique encryption keys for each user, you can rest assured that your information
+    is protected by endpoint to endpoint security. This way, your information can only be accessed by those
+    who you've provided with the key, unless you publish your report as public</p>
+
+<ul id="nav">
+    <li><a class="one" href="/about/">Getting Started</a></li>
+    <li><a class="one" href="/mission/">Mission Statement</a></li>
+    <li><a class="one" href="/security/">Security</a></li>
+    <li><a class="one" href="/contact/">Contact Us</a></li>
+</ul>
+
+
+
+
+
+

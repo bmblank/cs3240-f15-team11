@@ -3,14 +3,14 @@
     body {
         font-family: "Trebuchet MS", Verdana, sans-serif;
         font-size: 16px;
-        background-color: #0000b0;
+        background-color: blue;
         color: #ffffff;
         padding: 3px;
     }
 
     #main {
         padding: 5px;
-        padding-left: 15px;
+        padding-left:  15px;
         padding-right: 15px;
         background-color: #ffffff;
         border-radius: 0 0 5px 5px;
@@ -22,7 +22,6 @@
         color: #ffffff;
         font-size: 30px;
     }
-
     #nav {
         width: 100%;
         float: left;
@@ -31,40 +30,30 @@
         background-color: #FFA500;
         border-bottom: 1px solid #ccc;
     }
-
     #nav ul {
         list-style: none;
         width: 800px;
         margin: 0 auto;
         padding: 0;
     }
-
-    li.ui {
+    li {
         float: left;
     }
-
-    li.ui a.one {
+    li a.one {
         display: block;
         padding: 8px 15px;
         text-decoration: none;
         font-weight: bold;
-        color: #0000b0;
+        color: #FFA500;
         border-right: 1px solid #ccc;
     }
-
-    li.ui:first-child a {
+    li:first-child a {
         border-left: 1px solid #ccc;
     }
-
-    li.ui a.one:hover {
+    li a.one:hover {
         color: #ffffff;
         background-color: #cc9900;
     }
-
-    a {
-        color: lawngreen;
-    }
-
     a.one:link, a.one:visited {
         display: block;
         width: 201px;
@@ -76,45 +65,50 @@
         text-decoration: none;
         text-transform: uppercase;
     }
-
     a.one:hover, a.one:active {
         background-color: #7A991A;
     }
 </style>
 
+<!DOCTYPE html>
 <html>
 <head>
-    <title>SecureShare</title>
+
+    <title>Messages</title>
+
+    <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 <body>
 
 <ul id="nav">
-    <li class="ui"><a class="one" href="/home/">Home</a></li>
-    <li class="ui"><a class="one" href="/report/">Reports</a></li>
-    <li class="ui"><a class="one" href="/search/">Search Reports</a></li>
-    <li class="ui"><a class="one" href="{% url 'inbox_list' %}">Inbox</a></li>
-    <li class="ui"><a class="one" href="/givepermissions/">Grant Permissions</a></li>
-    {% if userIsSiteManager %}
-        <a href="/suspension/">Suspend accounts</a>
-    {% endif %}
-    {% if user.is_authenticated %}
-        <li class="ui"><a class="one" href="/logout/">Logout</a></li>
-    {% else %}
-        <li class="ui"><a class="one" href="/login/?next={{ request.path }}">Login</a></li>
-    {% endif %}
+      <li><a class="one" href="/home/">Home</a></li>
+      <li><a class="one" href="/report/">Reports</a></li>
+      <li><a class="one" href="/message/">Messages</a></li>
+      {% if user.is_authenticated %}
+        <li><a class="one" href="/logout/">Logout</a></li>
+      {% else %}
+        <li><a class="one" href="/login/?next={{ request.path }}">Login</a></li>
+      {% endif %}
 </ul>
 
-{% block content %}
-{% endblock %}
+<h1>Messages</h1>
+
+<p>Here are your messages.</p>
+
+{% if reports_list %}
+    <ul>
+    {% for r in reports_list %}
+        <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You currently do not have any messages.</p>
+{% endif %}
 
 <ul id="nav">
-    <li class="ui"><a class="one" href="/about/">Getting Started</a></li>
-    <li class="ui"><a class="one" href="/mission/">Mission Statement</a></li>
-    <li class="ui"><a class="one" href="/security/">Security</a></li>
-    <li class="ui"><a class="one" href="/contact/">Contact Us</a></li>
+    <li><a class="one" href="/about/">Getting Started</a></li>
+    <li><a class="one" href="/mission/">Mission Statement</a></li>
+    <li><a class="one" href="/security/">Security</a></li>
+    <li><a class="one" href="/contact/">Contact Us</a></li>
 </ul>
-
-</body>
-</html>
-
 

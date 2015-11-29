@@ -1,0 +1,109 @@
+<style>
+
+    body {
+        font-family: "Trebuchet MS", Verdana, sans-serif;
+        font-size: 16px;
+        background-color: blue;
+        color: #ffffff;
+        padding: 3px;
+    }
+
+    #main {
+        padding: 5px;
+        padding-left:  15px;
+        padding-right: 15px;
+        background-color: #ffffff;
+        border-radius: 0 0 5px 5px;
+    }
+
+    h1 {
+        font-family: Georgia, serif;
+        border-bottom: 3px solid #cc9900;
+        color: #ffffff;
+        font-size: 30px;
+    }
+    #nav {
+        width: 100%;
+        float: left;
+        margin: 0 0 1em 0;
+        padding: 0;
+        background-color: #FFA500;
+        border-bottom: 1px solid #ccc;
+    }
+    #nav ul {
+        list-style: none;
+        width: 800px;
+        margin: 0 auto;
+        padding: 0;
+    }
+    li {
+        float: left;
+    }
+    li a.one {
+        display: block;
+        padding: 8px 15px;
+        text-decoration: none;
+        font-weight: bold;
+        color: #FFA500;
+        border-right: 1px solid #ccc;
+    }
+    li:first-child a {
+        border-left: 1px solid #ccc;
+    }
+    li a.one:hover {
+        color: #ffffff;
+        background-color: #cc9900;
+    }
+    a.one:link, a.one:visited {
+        display: block;
+        width: 201px;
+        font-weight: bold;
+        color: #ffffff;
+        background-color: #FFA500;
+        text-align: center;
+        padding: 5px;
+        text-decoration: none;
+        text-transform: uppercase;
+    }
+    a.one:hover, a.one:active {
+        background-color: #7A991A;
+    }
+</style>
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Mission Statement</title>
+
+    <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<ul id="nav">
+      <li><a class="one" href="/home/">Home</a></li>
+      <li><a class="one" href="/report/">Reports</a></li>
+      <li><a class="one" href="/message/">Messages</a></li>
+      {% if user.is_authenticated %}
+        <li><a class="one" href="/logout/">Logout</a></li>
+      {% else %}
+        <li><a class="one" href="/login/?next={{ request.path }}">Login</a></li>
+      {% endif %}
+</ul>
+
+<h1>Mission Statement</h1>
+
+<p><b>SecureShare:  An Information System to Support Secure Information Sharing</b><br>
+Many small groups in the world need a means to collect, share, and distribute information
+    securely, without risking it falling into the wrong hands on their own computer or servers,
+    and without it being lost due to other reasons (theft, viruses, etc).<br><br>
+SecureShare.V1 provides a platform for reporters, consumers, and world audiences alike to
+    securely publish and trade information, publically or privately, over our highly encrypted
+    servers, delivering state of the art peer-to-peer (P2P) communication</p>
+
+<ul id="nav">
+    <li><a class="one" href="/about/">Getting Started</a></li>
+    <li><a class="one" href="/mission/">Mission Statement</a></li>
+    <li><a class="one" href="/security/">Security</a></li>
+    <li><a class="one" href="/contact/">Contact Us</a></li>
+</ul>
