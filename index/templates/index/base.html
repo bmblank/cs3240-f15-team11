@@ -1,0 +1,28 @@
+<html>
+	<body>
+
+		<a href="/home/">Home</a>
+		<a href="/report/">Reports</a>
+		<a href="/yourreports/">Your Reports</a>
+		<a href="{% url 'inbox_list' %}">Inbox</a>
+		<a href="/givepermissions/">Grant Permissions</a>
+		
+
+		{% if userIsSiteManager %}
+		    <a href="/suspension/">Suspend accounts</a>
+		{% endif %}
+		{% if user.is_authenticated %}
+		    <a href="/logout/">Logout</a>
+		{% else %}
+		    <a href="/login/?next={{ request.path }}">Login</a>
+		{% endif %}
+
+		{% block content %}
+		{% endblock %}
+
+
+
+	</body>
+</html>
+
+

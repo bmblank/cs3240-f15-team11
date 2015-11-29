@@ -149,14 +149,14 @@ def detail(request, report_id):
 
     if request.method == "POST":
         form = MoveToFolderForm(request.POST)
-        possibly_new_folder, created = Folder.objects.get_or_create(Folder_Name=request.user.username+request.POST.get('folder_to_move_to'))
+        possibly_new_folder, created = Folder.objects.get_or_create(Folder_Name=request.POST.get('folder_to_move_to'))
         if created:
             possibly_new_folder.creator=request.user
             possibly_new_folder.save()
 
         r.folder = possibly_new_folder
         r.save()
-        redirect('index.views.YourReports')
+        return redirect('index.views.YourReports')
     else:
         form = MoveToFolderForm()
 
@@ -183,6 +183,22 @@ def EditReport(request, report_id):
     else:
         form = ReportForm(instance=r)
     return render(request, 'index/create.html', {'form': form})
+
+@login_required
+def RenameFolder(request, folder_id):
+    f = get_object_or_404(Folder, pk=folder_id)
+
+    if request.method == "POST":
+        form = FolderForm(request.POST, instance=f)
+        if form.is_valid():
+            f = form.save(commit=False)
+            f.Folder_Name = request.POST.get('Folder_Name')
+            f.creator = request.user
+            f.save()
+            return redirect('index.views.FolderDetails', folder_id=f.pk)
+    else:
+        form = FolderForm(instance=f)
+    return render(request, 'index/createfolder.html', {'form': form})
 
 @login_required
 def RemoveReportFromFolder(request, report_id):
@@ -366,7 +382,7 @@ def CreateFolder(request):
             if request.POST.get("Folder_Name") == None:
                 return redirect('index.views.CreateFolder')
             else:
-                new_folder, created = Folder.objects.get_or_create(Folder_Name=request.user.username+'_____'+request.POST.get("Folder_Name"))
+                new_folder, created = Folder.objects.get_or_create(Folder_Name=request.POST.get("Folder_Name"))
                 if created == False:
                     print("This folder already exists.")
                 else:

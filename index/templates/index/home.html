@@ -1,18 +1,7 @@
+{% extends 'index/base.html' %}
+{% block content %}
 <h1>Home</h1>
-
 <p>This is home.</p>
+ {% endblock %}
 
-<a href="/report/">Reports</a>
-<a href="/givepermissions/">Grant Permissions</a>
-<a href="{% url 'inbox_list' %}">Inbox</a>
-<a href="/yourreports/">Your Reports</a>
-
-{% if userIsSiteManager %}
-    <a href="/suspension/">Suspend accounts</a>
-{% endif %}
-{% if user.is_authenticated %}
-    <a href="/logout/">Logout</a>
-{% else %}
-    <a href="/login/?next={{ request.path }}">Login</a>
-{% endif %}
 

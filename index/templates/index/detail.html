@@ -1,5 +1,6 @@
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
-
+{% extends 'index/base.html' %}
+{% block content %}
 <h1>{{ r.title }}</h1>
 <h2>Creation Date</h2>
 {{r.created}}
@@ -16,17 +17,15 @@
 {{r.Attachments}}
 <h2>Group</h2>
 {{r.group_name}}
-
+<br><br>
 {% if authorIsViewing%}
 	<h2> Folder:</h2>
 	{% if r.folder %}
-	{{ r.folder.pure_folder_name }}
+	{{ r.folder.Folder_Name }}
 	<a href="{% url 'remove_from_folder' report_id=r.pk %}">Remove report from this folder</a>
 	{% else%}
 	This report that you've created is not in a folder.
 	{% endif %}
-
-	<br>
 	    <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="save btn btn-default">Move</button>
@@ -37,7 +36,9 @@
 
 {% endif %}
 
+
 {% if authorIsViewing or siteManagerIsViewing%}
 	<a href="{% url 'delete_report' report_id=r.pk %}">Delete Report</a>
 {% endif %}
+ {% endblock %}
 

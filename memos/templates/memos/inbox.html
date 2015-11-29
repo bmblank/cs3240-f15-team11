@@ -1,3 +1,6 @@
+
+{% extends 'index/base.html' %}
+{% block content %}
 <h1>Inbox</h1>
 
 <p>These are the messages.</p>
@@ -20,5 +23,6 @@
 {% endif %}
 <a href="/home/">Home</a>
 <a href="{% url 'create_memo' %}">Create New Message</a>
+{% endblock %}
 
 

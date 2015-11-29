@@ -1,3 +1,6 @@
+
+{% extends 'index/base.html' %}
+{% block content %}
 <h1>{{ r.subject }}</h1>
 <h2>Sender</h2>
 {{r.sender}}
@@ -8,3 +11,4 @@
 
 <br>
 <a href="{% url 'delete_memo' memo_id=r.pk %}">Delete Report</a>
+{% endblock %}

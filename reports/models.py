@@ -23,10 +23,6 @@ class Folder(models.Model):
     Folder_Name = models.CharField(max_length=200)
     creator = models.ForeignKey(User, default=None, null=True, related_name='creator')
 
-    def pure_folder_name(self):
-        ind = self.Folder_Name.find('_____')+4
-        return self.Folder_Name[ind:]
-
 class Report(models.Model):
     title = models.CharField(max_length=200)
     Short_Description = models.CharField(max_length=200)
@@ -34,6 +30,7 @@ class Report(models.Model):
     Location_of_Event = models.CharField(max_length=100)
     Attachments = models.FileField(upload_to='report', blank=True)
     # sensitivity = models.IntegerField(choices=PRIORITY_CHOICES)
+    Attachment_is_Encrypted = models.BooleanField(default=False)
     Report_is_Public = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     group_name = models.CharField(max_length=200, default='Public')
@@ -58,3 +55,30 @@ class Choice(models.Model):
     votes = models.IntegerField(default=0)
     def __str__(self):              # __unicode__ on Python 2
         return self.title
+
+# class AdditionalUserInfo(models.Model):
+    # the_user = models.ForeignKey(User, null=True, related_name='the_user')
+    # new_message = models.BooleanField(default=False)
+    # public key??
+    # user = models.OneToOneField(
+    #     settings.AUTH_USER_MODEL,
+    #     on_delete=models.CASCADE,
+    # )
+    # supervisor = models.OneToOneField(
+    #     settings.AUTH_USER_MODEL,
+    #     on_delete=models.CASCADE,
+    #     related_name='supervisor_of',
+    # )
+
+
+#one to one relationship for adding attributes to User modelsclass MySpecialUser(models.Model):
+# class MySpecialUser(models.Model):
+#     user = models.OneToOneField(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.CASCADE,
+#     )
+#     supervisor = models.OneToOneField(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.CASCADE,
+#         related_name='supervisor_of',
+#     )
