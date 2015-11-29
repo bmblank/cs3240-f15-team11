@@ -1,22 +1,23 @@
 {% extends 'index/base.html' %}
 
-<br><br>
 {% block content %}
-<form method="get" action="/search/">
-<label for="id_q">Search:</label>
-<input type="text" name="q" id="id_q"/>
-<input type="submit" value="Submit"/>
-</form>
-You searched for "{{ query_string }}" and the results are listed below.
+    <form method="get" action="/search/">
+        <label for="id_q">Search:</label>
+        <input type="text" name="q" id="id_q"/>
+        <input type="submit" value="Submit"/>
+    </form>
+    You searched for "{{ query_string }}" and the results are listed below.
 
-{% if show_these_reports %}
-    <ul>
-    {% for r in show_these_reports %}
-        <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a><br>Author: {{r.author}}<br>Description: {{r.Short_Description}}</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No reports are available.</p>
-{% endif %}
+    {% if show_these_reports %}
+        <ul>
+            {% for r in show_these_reports %}
+                <li>
+                    <a href="{% url 'detail' r.id %}">{{ r.title }}</a><br>Author: {{ r.author }}<br>Description: {{ r.Short_Description }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No reports are available.</p>
+    {% endif %}
 {% endblock %}
 <!-- <li> {{ found_entries }}</li> -->
