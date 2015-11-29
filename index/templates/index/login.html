@@ -1,3 +1,5 @@
+{% extends 'index/base.html' %}
+
 <form method="post" action=".?next={{ redirect_to }}"> {% csrf_token %}
     <input type="text" name="username" placeholder="Username"/>
     <input type="password" name="password" placeholder="Password"/>
