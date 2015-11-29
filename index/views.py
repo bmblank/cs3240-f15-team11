@@ -369,8 +369,12 @@ def Register(request):
             user.save()
             registered = True
             print("USER SUCCESS!")
+
+            return redirect('index.views.Home')
         else:
             print("USER ERROR!")
+
+
     else:
         user_form = UserForm()
 
