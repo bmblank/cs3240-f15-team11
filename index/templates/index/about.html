@@ -1,20 +1,22 @@
 {% extends 'index/base.html' %}
 
+{% block title %}
+    <title>Getting Started</title>
+{% endblock %}
+
 {% block content %}
+    <h1>Getting Started</h1>
 
-<h1>Getting Started</h1>
+    <p><b>Welcome to SecureWitness!</b><br>
+        <b><i>1) <a href="/login/">Create an Account</a><br>
+            2) <a href="/create/">Create a Report</a><br>
+            3) Share your work<br>
+            4) <a href="/report/">Review/Edit/Delete your Report</a><br></i></b></p>
 
-<p><b>Welcome to SecureWitness!</b><br>
-<b><i>1) <a href="/login/">Create an Account</a><br>
-2) <a href="/create/">Create a Report</a><br>
-3) Share your work<br>
-4) <a href="/report/">Review/Edit/Delete your Report</a><br></i></b></p>
-
-<ul id="nav">
-    <li><a class="one" href="/about/">Getting Started</a></li>
-    <li><a class="one" href="/mission/">Mission Statement</a></li>
-    <li><a class="one" href="/security/">Security</a></li>
-    <li><a class="one" href="/contact/">Contact Us</a></li>
-</ul>
-
+    <ul id="nav">
+        <li><a class="one" href="/about/">Getting Started</a></li>
+        <li><a class="one" href="/mission/">Mission Statement</a></li>
+        <li><a class="one" href="/security/">Security</a></li>
+        <li><a class="one" href="/contact/">Contact Us</a></li>
+    </ul>
 {% endblock %}

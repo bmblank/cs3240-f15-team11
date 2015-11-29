@@ -1,5 +1,9 @@
 {% extends 'index/base.html' %}
 
+{% block title %}
+    <title>Registration</title>
+{% endblock %}
+
 {% block content %}
     <h1>Register with SecureWitness</h1>
     <form method="POST" class="post-form">{% csrf_token %}

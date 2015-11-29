@@ -1,5 +1,9 @@
 {% extends 'index/base.html' %}
 
+{% block title %}
+    <title>Search Results</title>
+{% endblock %}
+
 {% block content %}
     <form method="get" action="/search/">
         <label for="id_q">Search:</label>
