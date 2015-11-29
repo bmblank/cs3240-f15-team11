@@ -1,22 +1,25 @@
-
 {% extends 'index/base.html' %}
+
 {% block content %}
 
-<h1>Reports</h1>
+    <h1>Reports</h1>
 
-<p>These are the reports.</p>
+    <p>These are the reports.</p>
 
-{% if has_permission_to_view_reports_list %}
-    <ul>
-    {% for r in has_permission_to_view_reports_list %}
-        <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a><br>Author: {{r.author}}<br>Description: {{r.Short_Description}}</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No reports are available.</p>
-{% endif %}
-<a href="{% url 'create' %}">Create Report</a>
- {% endblock %}
+    {% if has_permission_to_view_reports_list %}
+        <ul>
+            {% for r in has_permission_to_view_reports_list %}
+                <li>
+                    <a href="{% url 'detail' r.id %}">{{ r.title }}</a><br>Author: {{ r.author }}<br>Description: {{ r.Short_Description }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No reports are available.</p>
+    {% endif %}
+    <a href="{% url 'create' %}">Create Report</a>
+
+{% endblock %}
 
 
 

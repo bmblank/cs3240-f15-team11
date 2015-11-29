@@ -379,7 +379,6 @@ def Register(request):
     return render(request, 'index/register.html', {'user_form': user_form})
 
 
-
 @login_required
 def create(request):
     if request.method == "POST":
