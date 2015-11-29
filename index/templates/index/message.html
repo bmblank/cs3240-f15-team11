@@ -19,7 +19,7 @@
     h1 {
         font-family: Georgia, serif;
         border-bottom: 3px solid #cc9900;
-        color: #996600;
+        color: #ffffff;
         font-size: 30px;
     }
     #nav {
@@ -74,7 +74,7 @@
 <html>
 <head>
 
-    <title>SecureShare</title>
+    <title>Messages</title>
 
     <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -91,9 +91,19 @@
       {% endif %}
 </ul>
 
+<h1>Messages</h1>
 
-<img src="" alt="Secure Witness Banner" style="width:851px;height:315px;">
-<p><center>Welcome to Secure Witness!</center></p>
+<p>Here are your messages.</p>
+
+{% if reports_list %}
+    <ul>
+    {% for r in reports_list %}
+        <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You currently do not have any messages.</p>
+{% endif %}
 
 <ul id="nav">
     <li><a class="one" href="/about/">Getting Started</a></li>

@@ -13,8 +13,6 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from .forms import GivePermissionsForm
 
-
-
 def Login(request):
     next = request.GET.get('next', '/home/')
     if request.method == "POST":
@@ -44,7 +42,7 @@ def Home(request):
 @login_required
 def ReportList(request):
     reports_list = Report.objects.order_by('title')
-    
+
     has_permission_to_view_reports_list = []
 
     valid_groups = request.user.groups.all()
@@ -71,6 +69,26 @@ def ReportList(request):
     # context = {'reports_list': reports_list}
     context = {'has_permission_to_view_reports_list': has_permission_to_view_reports_list}
     return render(request, 'index/report.html', context)
+
+@login_required
+def Message(request):
+    return render(request, "index/message.html", {})
+
+@login_required
+def GettingStarted(request):
+    return render(request, "index/about.html", {})
+
+@login_required
+def Mission(request):
+    return render(request, "index/mission.html", {})
+
+@login_required
+def Security(request):
+    return render(request, "index/security.html", {})
+
+@login_required
+def Contact(request):
+    return render(request, "index/contact.html", {})
 
 @login_required
 def detail(request, report_id):

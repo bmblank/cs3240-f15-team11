@@ -126,3 +126,5 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/projectSite/'
+STATICFILES_DIRS = '/junk/'
