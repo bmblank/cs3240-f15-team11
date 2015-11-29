@@ -6,7 +6,7 @@ class ReportForm(forms.ModelForm):
 
     class Meta:
         model = Report
-        fields = ('title', 'Short_Description', 'Detailed_Description', 'Location_of_Event', 'Attachments', 'Attachment_is_Encrypted', 'Report_is_Public', 'group_name')
+        fields = ('title', 'Short_Description', 'Detailed_Description', 'Location_of_Event', 'Attachments', 'Attachment_is_Encrypted', 'Report_is_Public', 'group_name', 'folder')
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())

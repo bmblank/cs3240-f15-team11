@@ -23,6 +23,9 @@ class Folder(models.Model):
     Folder_Name = models.CharField(max_length=200)
     creator = models.ForeignKey(User, default=None, null=True, related_name='creator')
 
+    def __str__(self):
+        return self.Folder_Name
+
 class Report(models.Model):
     title = models.CharField(max_length=200)
     Short_Description = models.CharField(max_length=200)
