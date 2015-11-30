@@ -11,6 +11,9 @@ from django.utils import timezone
 from django.contrib.auth import models
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
+from Crypto.PublicKey import RSA
+from Crypto import Random
+
 
 
 
@@ -47,15 +50,21 @@ def NewMemo(request):
             
             user_list = User.objects.all()
             user_names = []
+            #public_keys = []
             for u in user_list:
                 user_names.append(u.username)
+                #public_keys.append(u.publicKey)
 
 
             if memo.recipient_username in user_names:
                 index_val = user_names.index(memo.recipient_username)
                 memo.recipient = User.objects.all()[index_val]
                 print("THIS IS THE MEMO recipient", memo.recipient)
+
+                memo.body = encryptBody(memo.body)
+
                 memo.save()
+
             else:
                 print("NOT A VALID USER!!!")
 
@@ -73,3 +82,12 @@ def MemoDetails(request, memo_id):
 def DeleteMemo(request, memo_id):
     Memo.objects.filter(id=memo_id).delete()
     return redirect('memos.views.Inbox')
+
+randomGen = Random.new().read
+key = RSA.generate(1024, randomGen)
+
+def encryptBody(text):
+    return key.publickey().encrypt(text.encode('utf-8'), 32)
+
+def decryptBody(text):
+    return key.decrypt(text)
