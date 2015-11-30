@@ -237,7 +237,30 @@ def EditReport(request, report_id):
             r = form.save(commit=False)
             r.author = request.user
             r.created = timezone.now()
-            r.save()
+
+            possibly_new_group, created = Group.objects.get_or_create(name=r.group_name)
+
+            if created:
+                possibly_new_group.user_set.add(request.user)
+                print("Edit successful, new group created.")
+                r.save()
+            else:
+                valid_groups = request.user.groups.all()
+                valid_group_names = []
+
+                for g in valid_groups:
+                    valid_group_names.append(g.name)
+                    # print("HERE ARE THE VALID EDIT GROUPS", g, type(g.name))
+
+                # print("VVVVVVVV", valid_groups, r.group_name, type(r.group_name))
+
+                if r.group_name in valid_group_names or "SiteManager" in valid_group_names:
+                    print("Edit success: you are allowed to post in this group")
+                    r.save()
+
+                else:
+                    print("You do not have permission to change group name to this group")
+
             return redirect('index.views.detail', report_id=r.pk)
     else:
         form = ReportForm(instance=r)
