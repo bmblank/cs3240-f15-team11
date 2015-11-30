@@ -1,7 +1,12 @@
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
 {% extends 'index/base.html' %}
+
+{% block title %}
+    <title>Report Detail</title>
+{% endblock %}
+
 {% block content %}
-<h1>{{ r.title }}</h1>
+    <h1>{{ r.title }}</h1>
+
     <table>
         <tr>
             <td>
@@ -82,28 +87,15 @@
             </td>
         </tr>
     </table>
-<br><br>
-{% if authorIsViewing%}
-	<h2> Folder:</h2>
-	{% if r.folder %}
-	{{ r.folder.Folder_Name }}
-	<a href="{% url 'remove_from_folder' report_id=r.pk %}">Remove report from this folder</a>
-	{% else%}
-	This report that you've created is not in a folder.
-	{% endif %}
-	    <form method="POST" class="post-form">{% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="save btn btn-default">Move</button>
-    </form>
-	
 
-	<a href="{% url 'edit_report' report_id=r.pk %}">Edit Report</a>
+    <br><br>
 
-{% endif %}
+    {% if authorIsViewing %}
+        <a href="{% url 'edit_report' report_id=r.pk %}">Edit Report</a>
+    {% endif %}
 
+    {% if authorIsViewing or siteManagerIsViewing %}
+        <a href="{% url 'delete_report' report_id=r.pk %}">Delete Report</a>
+    {% endif %}
 
-{% if authorIsViewing or siteManagerIsViewing%}
-	<a href="{% url 'delete_report' report_id=r.pk %}">Delete Report</a>
-{% endif %}
- {% endblock %}
-
+{% endblock %}

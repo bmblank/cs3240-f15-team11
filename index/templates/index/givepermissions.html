@@ -1,9 +1,13 @@
 {% extends 'index/base.html' %}
 
+{% block title %}
+    <title>Give Permissions</title>
+{% endblock %}
+
 {% block content %}
     <h1>This is the page where you can give permissions to other </h1>
     <form method="POST" class="post-form">{% csrf_token %}
-    	Groups you are in: {{valid_group_names}}
+        Groups you are in: {{ valid_group_names }}
         {{ permission_form.as_p }}
         <button type="submit" class="save btn btn-default">Add User to Group</button>
     </form>
