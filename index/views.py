@@ -51,6 +51,7 @@ def get_query(query_string, search_fields):
             query = query & or_query
     return query
 
+@login_required
 def search(request):
     query_string = ''
     found_reports = None
