@@ -484,18 +484,15 @@ def CreateFolder(request):
     return render(request, 'index/createfolder.html', {'form': form})
 
 
-@login_required
+
 def GettingStarted(request):
     return render(request, "index/about.html", {})
 
-@login_required
 def Mission(request):
     return render(request, "index/mission.html", {})
 
-@login_required
 def Security(request):
     return render(request, "index/security.html", {})
 
-@login_required
 def Contact(request):
     return render(request, "index/contact.html", {})
