@@ -1,0 +1,28 @@
+{% extends 'index/base.html' %}
+
+{% block title %}
+    <title>Messages</title>
+{% endblock %}
+
+{% block content %}
+    <h1>Messages</h1>
+
+    <p>Here are your messages.</p>
+
+    {% if reports_list %}
+        <ul>
+            {% for r in reports_list %}
+                <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You currently do not have any messages.</p>
+    {% endif %}
+
+    <ul id="nav">
+        <li><a class="one" href="/about/">Getting Started</a></li>
+        <li><a class="one" href="/mission/">Mission Statement</a></li>
+        <li><a class="one" href="/security/">Security</a></li>
+        <li><a class="one" href="/contact/">Contact Us</a></li>
+    </ul>
+{% endblock %}

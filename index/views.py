@@ -51,6 +51,7 @@ def get_query(query_string, search_fields):
             query = query & or_query
     return query
 
+@login_required
 def search(request):
     query_string = ''
     found_reports = None
@@ -69,8 +70,6 @@ def search(request):
         for rep in found_reports:
             if rep.group_name in vgroupnames or 'SiteManager' in vgroupnames:
                 show_these_reports.append(rep)
-
-
 
     return render(request,'index/search_results.html', { 'query_string': query_string, 'show_these_reports': show_these_reports })
 
@@ -144,7 +143,7 @@ def ReportList(request):
 
     userIsSiteManager = checkIfUserisSM(request)
     reports_list = Report.objects.order_by('title')
-    
+
     has_permission_to_view_reports_list = []
 
     valid_groups = request.user.groups.all()
@@ -197,6 +196,26 @@ def DeleteReportsInFolder(request, folder_id):
         Report.objects.filter(id=rep.id).delete()   
     return redirect('index.views.FolderDetails', folder_id=folder_id)     
 
+
+@login_required
+def Message(request):
+    return render(request, "index/message.html", {})
+
+@login_required
+def GettingStarted(request):
+    return render(request, "index/about.html", {})
+
+@login_required
+def Mission(request):
+    return render(request, "index/mission.html", {})
+
+@login_required
+def Security(request):
+    return render(request, "index/security.html", {})
+
+@login_required
+def Contact(request):
+    return render(request, "index/contact.html", {})
 
 @login_required
 def detail(request, report_id):
@@ -369,15 +388,18 @@ def Register(request):
             user.save()
             registered = True
             print("USER SUCCESS!")
+
+            return redirect('index.views.Home')
         else:
             print("USER ERROR!")
+
+
     else:
         user_form = UserForm()
 
 
     # user_form = UserForm()
     return render(request, 'index/register.html', {'user_form': user_form})
-
 
 
 @login_required
