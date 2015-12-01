@@ -1,3 +1,5 @@
+import requests
+
 # passphrase = b'Sixteen sdfsddddddddddddddsaldkddddddddddddddddddddddddddddddddddddddddddd'
 # print(encrypt_file('011.PNG', passphrase))
 # print(decrypt_file('011.PNG.enc', passphrase))
@@ -10,3 +12,7 @@
 #   Choose a report, display it, and allow the user to download the file or files for that report.
 #   Decrypt files if they are encrypted.
 #   If you want to require a user to encrypt files with the FDA before uploading them with a report, that is acceptable.
+
+if __name__ == '__main__':
+    r = requests.get('http://localhost:8000/api/reports/', auth=('admin', 'password'))
+    print(r.text)
