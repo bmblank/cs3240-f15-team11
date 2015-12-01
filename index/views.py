@@ -73,8 +73,6 @@ def search(request):
             if rep.group_name in vgroupnames or 'SiteManager' in vgroupnames:
                 show_these_reports.append(rep)
 
-
-
     return render(request,'index/search_results.html', { 'query_string': query_string, 'show_these_reports': show_these_reports })
 
 #######################USER AUTHENTICATION STUFF########################################################
