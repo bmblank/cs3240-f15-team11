@@ -15,6 +15,10 @@ from .forms import GivePermissionsForm, SuspensionForm, UnsuspensionForm
 from django.contrib.auth.decorators import user_passes_test
 import re
 from django.db.models import Q
+from django.contrib.auth.models import User, Group
+from rest_framework import viewsets
+from index.serializers import UserSerializer, GroupSerializer, ReportSerializer
+
 
 #http://julienphalip.com/post/2825034077/adding-search-to-a-django-site-in-a-snap
 def normalize_query(query_string,
@@ -481,3 +485,27 @@ def CreateFolder(request):
     else:
         form = FolderForm
     return render(request, 'index/createfolder.html', {'form': form})
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
+
+class ReportViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows reports to be viewed or edited.
+    """
+    queryset = Report.objects.all()
+    serializer_class = ReportSerializer
