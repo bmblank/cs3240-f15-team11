@@ -1,4 +1,5 @@
 import requests
+import json
 
 # passphrase = b'Sixteen sdfsddddddddddddddsaldkddddddddddddddddddddddddddddddddddddddddddd'
 # print(encrypt_file('011.PNG', passphrase))
@@ -14,5 +15,21 @@ import requests
 #   If you want to require a user to encrypt files with the FDA before uploading them with a report, that is acceptable.
 
 if __name__ == '__main__':
-    r = requests.get('http://localhost:8000/api/reports/', auth=('admin', 'password'))
-    print(r.text)
+    print("SecureShare File Download Application")
+
+    # username = input("Enter username: ")
+    # password = input("Enter password: ")
+    username = 'admin'
+    password = 'password'
+
+    r = requests.get('http://localhost:8000/api/reports/', auth=(username, password))
+    reports = json.loads(r.text)
+    print(reports)
+
+    if reports['count'] == 0:
+        print("There are no reports.")
+    else:
+        reports_list = reports['results']
+        for report in reports_list:
+            print(report)
+
