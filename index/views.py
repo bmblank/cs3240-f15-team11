@@ -203,9 +203,23 @@ def ReportList(request): #Shows a list of all the reports you have permission to
 
 @login_required
 def create(request): #Allows you to create a new report
+    download_url = ""
     if request.method == "POST":
         # form = ReportForm(request.POST, request.FILES)
-        form = ReportForm(request.POST)
+        form = ReportForm(request.POST, request.FILES)
+
+        if request.FILES:
+            download_url='/media/report/'+ request.FILES['Attachments'].name
+            download_url = download_url.replace(' ', '_')            
+
+        if request.FILES:
+            print("HI HERES DOWNLOAD URL: ", download_url)
+
+        if download_url:
+            print("DOWNLOAD URL EXISTSSSSSSSSSSSS!!")
+        else:
+            print("DOWNLOAD URL DOESNT EXISSSSSSST D: ")
+
 
         if form.is_valid():
             report = form.save(commit=False)
@@ -228,6 +242,9 @@ def create(request): #Allows you to create a new report
                     new_group.save()
 
                 report.save()
+
+                return redirect('index.Home')
+
             else:
                 valid_users = new_group.user_set.all()
                 print("HEEY", valid_users)
@@ -320,10 +337,10 @@ def EditReport(request, report_id):
         form = ReportForm(instance=r)
     return render(request, 'index/create.html', {'form': form})
 
- @login_required
- def DeleteReport(request, report_id):
-     Report.objects.filter(id=report_id).delete()
-     return redirect('index.views.ReportList')   
+@login_required
+def DeleteReport(request, report_id):
+    Report.objects.filter(id=report_id).delete()
+    return redirect('index.views.ReportList')   
 
 ###############################FOLDER STUFF##################################################################
 
