@@ -33,3 +33,13 @@ if __name__ == '__main__':
         for report in reports_list:
             print(report)
 
+        for report in reports_list:
+            print('Title:', report['title'])
+            print('Author:', report['author'])
+            print('Short Description:', report['Short_Description'])
+            print('URL:', report['url'])
+            print()
+
+        url_input = input("Enter an article URL to download:")
+
+
