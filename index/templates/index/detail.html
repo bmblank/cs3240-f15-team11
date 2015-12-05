@@ -84,6 +84,12 @@
             </td>
             <td>
                 {{ r.Attachments }}
+
+
+                {% if r.Attachments and not r.Attachment_is_Encrypted %}
+                <a href={{ attachment_link }} download> Download </a>
+                {%endif%}
+
             </td>
         </tr>
     </table>
