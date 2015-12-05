@@ -88,6 +88,9 @@
 
                 {% if r.Attachments and not r.Attachment_is_Encrypted %}
                 <a href={{ attachment_link }} download> Download </a>
+
+                {% elif r.Attachments and r.Attachment_is_Encrypted%}
+                (This is an encypted file. Use FDA to download.)
                 {%endif%}
 
             </td>
