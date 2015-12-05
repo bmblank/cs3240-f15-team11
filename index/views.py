@@ -294,7 +294,7 @@ def EditReport(request, report_id):
     r = get_object_or_404(Report, pk=report_id)
 
     if request.method == "POST":
-        form = ReportForm(request.POST, instance=r)
+        form = ReportForm(request.POST, request.FILES, instance=r)
         if form.is_valid():
             r = form.save(commit=False)
             r.author = request.user
