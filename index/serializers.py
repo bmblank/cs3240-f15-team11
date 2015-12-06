@@ -18,4 +18,4 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class ReportSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Report
-        fields = ('url', 'title', 'author', 'Short_Description')
+        fields = ('title', 'author', 'Short_Description', 'Attachments', 'url')

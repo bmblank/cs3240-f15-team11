@@ -29,24 +29,42 @@ if __name__ == '__main__':
     # TODO add error checking for incorrect login info
     # TODO add unresponsive server checking
 
-
     r = requests.get('http://localhost:8000/api/reports/', auth=(username, password))
     reports = json.loads(r.text)
     print(reports)
 
     while True:
-        print("What do you want to do?")
+        print("What do you want to do? Or enter nothing to exit.")
         print("\tR - list reports")
         print("\tD - decrypt file")
         print("\tE - encrypt file")
-        print("\tX - download report")
-        choice = input(">>> ")
+        print("\tX - view report")
+        choice = input(">>> ").strip()
+
         if choice == 'R':
             print("List reports")
             # List the reports the user has access to. Include identifier so it (+ attachment(s)) can be downloaded
+            r = requests.get('http://localhost:8000/api/reports/', auth=(username, password))
+            reports = json.loads(r.text)
+
+            if reports['count'] == 0:
+                print("There are no reports.")
+            else:
+                reports_list = reports['results']
+                for report in reports_list:
+                    print(report)
+
+                for report in reports_list:
+                    print('Title:', report['title'])
+                    print('Author:', report['author'])
+                    print('Short Description:', report['Short_Description'])
+                    print('Attachments: ', report['Attachments'])
+                    print('URL:', report['url'])
+                    print()
+
         elif choice == 'D':
             print("Decrypt file")
-            file_to_decrypt = input("Which file do you want to decrypt? ")
+            file_to_decrypt = input("Which file do you want to decrypt? ").strip()
             if not os.path.isfile(file_to_decrypt):
                 print("File does not exist!")
             passphrase = input("Enter passphrase: ")
@@ -54,9 +72,10 @@ if __name__ == '__main__':
                 print("Done!")
             else:
                 print("Decryption did not work.")
+
         elif choice == 'E':
             print("Encrypt file")
-            file_to_encrypt = input("Which file do you want to encrypt? ")
+            file_to_encrypt = input("Which file do you want to encrypt? ").strip()
             if not os.path.isfile(file_to_encrypt):
                 print("File does not exist!")
             passphrase = input("Enter passphrase: ")
@@ -64,24 +83,16 @@ if __name__ == '__main__':
                 print("Done!")
             else:
                 print("Encryption did not work.")
+
         elif choice == 'X':
-            print("Download report")
-        else:
-            print("Incorrect input entered.")
-
-
-    if reports['count'] == 0:
-        print("There are no reports.")
-    else:
-        reports_list = reports['results']
-        for report in reports_list:
+            print("View report")
+            url_input = input("Enter an article URL to view: ").strip()
+            r = requests.get(url_input, auth=(username, password))
+            report = json.loads(r.text)
             print(report)
 
-        for report in reports_list:
-            print('Title:', report['title'])
-            print('Author:', report['author'])
-            print('Short Description:', report['Short_Description'])
-            print('URL:', report['url'])
-            print()
+        elif choice == '':
+            exit()
 
-        url_input = input("Enter an article URL to download:")
+        else:
+            print("Incorrect input entered.")
