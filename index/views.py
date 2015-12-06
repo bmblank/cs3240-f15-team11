@@ -495,6 +495,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAdminUser, )
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -503,6 +504,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+    permission_classes = (permissions.IsAdminUser, )
 
 
 class ReportViewSet(viewsets.ModelViewSet):
@@ -511,4 +513,4 @@ class ReportViewSet(viewsets.ModelViewSet):
     """
     queryset = Report.objects.all()
     serializer_class = ReportSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, )
+    permission_classes = (IsOwnerOrReadOnly, )
