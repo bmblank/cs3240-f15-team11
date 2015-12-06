@@ -54,7 +54,7 @@ def decrypt_file(file, passphrase): #expects passphrase to be a string
 if __name__ == '__main__':
     encrypt = input("Are you encrypting (Enter 1) or decrypting (Enter 2)? ")
     filename = input("What's the file name? ")
-    passcode = input("What's the passcode? ")
+    passcode = input("What's the passphrase? ")
 
     if encrypt == "1":
         print("Encrypting file")
