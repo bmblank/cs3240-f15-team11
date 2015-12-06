@@ -3,10 +3,6 @@ from reports.models import Report
 from rest_framework import serializers
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ('url', 'username', 'email', 'groups')
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
@@ -15,7 +11,17 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name')
 
 
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    groups = GroupSerializer(many=True)
+
+    class Meta:
+        model = User
+        fields = ('url', 'username', 'email', 'groups')
+
+
 class ReportSerializer(serializers.HyperlinkedModelSerializer):
+    author = UserSerializer()
+
     class Meta:
         model = Report
         fields = ('title', 'author', 'Short_Description', 'Detailed_Description', 'Location_of_Event', 'created',
