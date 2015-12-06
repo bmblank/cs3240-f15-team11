@@ -52,9 +52,6 @@ if __name__ == '__main__':
             else:
                 reports_list = reports['results']
                 for report in reports_list:
-                    print(report)
-
-                for report in reports_list:
                     print('Title:', report['title'])
                     print('Author:', report['author'])
                     print('Short Description:', report['Short_Description'])
@@ -89,7 +86,17 @@ if __name__ == '__main__':
             url_input = input("Enter an article URL to view: ").strip()
             r = requests.get(url_input, auth=(username, password))
             report = json.loads(r.text)
-            print(report)
+            print('Title:', report['title'])
+            print('Author:', report['author'])
+            print('Short Description:', report['Short_Description'])
+            print('Detailed Description:', report['Detailed_Description'])
+            print('Location of Event:', report['Location_of_Event'])
+            print('Created:', report['created'])
+            print('Group name:', report['group_name'])
+            # print('Folder:', report['folder'])
+            print('Attachments: ', report['Attachments'])
+            print('URL:', report['url'])
+            print()
 
         elif choice == '':
             exit()

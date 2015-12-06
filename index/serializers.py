@@ -18,4 +18,5 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class ReportSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Report
-        fields = ('title', 'author', 'Short_Description', 'Attachments', 'url')
+        fields = ('title', 'author', 'Short_Description', 'Detailed_Description', 'Location_of_Event', 'created',
+                  'group_name', 'Attachments', 'url')  # TODO folder doesn't work
