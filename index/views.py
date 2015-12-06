@@ -15,6 +15,9 @@ from .forms import GivePermissionsForm, SuspensionForm, UnsuspensionForm
 from django.contrib.auth.decorators import user_passes_test
 import re
 from django.db.models import Q
+from memos.models import Key
+from Crypto.PublicKey import RSA
+from Crypto import Random
 
 #http://julienphalip.com/post/2825034077/adding-search-to-a-django-site-in-a-snap
 def normalize_query(query_string,
@@ -389,9 +392,25 @@ def Register(request):
             public_group, created = Group.objects.get_or_create(name='Public')
             public_group.user_set.add(user)
 
+            randomGen = Random.new().read
+            genKey = RSA.generate(1024, randomGen)
+
+            key = Key.objects.create()
+            key.user = user
+            key.rKey = genKey
+            key.publicKey = genKey.publickey().exportKey()
+            key.privateKey = genKey.exportKey()
+
             user.save()
+            key.save()
+
             registered = True
             print("USER SUCCESS!")
+
+            print("public key is: " + str(key.publicKey))
+            print("private key is: " + str(key.privateKey))
+            return render(request, 'index/success_register.html', {'private_key': key.rKey.exportKey()})
+
         else:
             print("USER ERROR!")
     else:

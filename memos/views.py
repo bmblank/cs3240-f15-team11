@@ -13,9 +13,8 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from Crypto.PublicKey import RSA
 from Crypto import Random
-
-
-
+from .models import Key
+from .forms import DecryptForm
 
 
 # Create your views here.
@@ -47,6 +46,12 @@ def NewMemo(request):
             memo.body = request.POST.get('body')
             memo.subject = request.POST.get('subject')
             memo.created = timezone.now()
+            #memo.encrypted = request.POST.get('encrypted')
+
+            if (request.POST.get('encrypted') == None):
+                memo.encrypted = False
+            else:
+                memo.encrypted = True
             
             user_list = User.objects.all()
             user_names = []
@@ -57,11 +62,29 @@ def NewMemo(request):
 
 
             if memo.recipient_username in user_names:
-                index_val = user_names.index(memo.recipient_username)
-                memo.recipient = User.objects.all()[index_val]
-                print("THIS IS THE MEMO recipient", memo.recipient)
 
-                memo.body = encryptBody(memo.body)
+                recUserObj = User.objects.get(username=memo.recipient_username)
+                key = Key.objects.get(user=recUserObj)
+
+                    #key_we_need = Key.rKey.objects.all()[index_val]
+
+                #randomG = Random.new().read
+                #recipKey = RSA.generate(1024, randomG)
+                #memo.body = encryptBody(memo.body, recipKey)
+                #memo.body = decryptBody(memo.body, recipKey)
+
+                print("THIS IS THE ENCRYPT CHECKBOX VAL: ", request.POST.get('encrypted'))
+                if (memo.encrypted == True):
+                    #memo.body = encryptBody(memo.body)
+
+                    print("HIT THE IF STATEMENT")
+
+                    memo.body = encryptBody(memo.body, key.publicKey)
+                    #memo.body = decryptBody(memo.body, recipKey)
+
+
+                else:
+                    print("False was checked")
 
                 memo.save()
 
@@ -77,17 +100,30 @@ def NewMemo(request):
 @login_required
 def MemoDetails(request, memo_id):
     r = get_object_or_404(Memo, pk=memo_id)
-    return render(request, 'memos/memodetails.html', {'r': r})
+    if request.method == "POST":
+        form = DecryptForm(request.POST)
+        print("REQUEST: " + request.POST.get('decryptField'))
+
+        #recUserObj = User.objects.get(username=memo.recipient_username)
+        key = Key.objects.get(user=request.user)
+        r.body = decryptBody(r.body, key.privateKey)
+        #r.body = decryptBody(r.body, request.POST.get('decryptField'))
+    else:
+        form = DecryptForm()
+    return render(request, 'memos/memodetails.html', {'r': r, 'form': form})
 
 def DeleteMemo(request, memo_id):
     Memo.objects.filter(id=memo_id).delete()
-    return redirect('memos.views.Inbox')
+    return redirect('memos#.views.Inbox')
 
-randomGen = Random.new().read
-key = RSA.generate(1024, randomGen)
+def encryptBody(text, publicRKey):
+    encKey = RSA.importKey(publicRKey)
+    return encKey.encrypt(text.encode('utf-8'), 32)
 
-def encryptBody(text):
-    return key.publickey().encrypt(text.encode('utf-8'), 32)
+def decryptBody(text, rKey):
+    print("This is rKEY: ", rKey)
 
-def decryptBody(text):
-    return key.decrypt(text)
+    decKey = RSA.importKey(rKey)
+    print("THIS IS AFTER DECKEY")
+    print("Imported Key: "+ str(decKey))
+    return decKey.decrypt(text.decode('utf-8'))

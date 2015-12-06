@@ -15,13 +15,33 @@ class Memo(models.Model):
     subject = models.CharField(max_length=100, default=None)
     body = models.TextField(max_length=1000)
     created = models.DateTimeField(default=None)
+    encrypted = models.BooleanField(default=False)
 
-    """def encryptBody(self, Rkey):
-        #key = publicKey.importKey()
-        public_key = Rkey.publickey()
-        self.body = public_key.encrypt(self.body.encode('utf-8'), 32)
+class Key(models.Model):
+    user = models.OneToOneField(User, primary_key=True)
+    privateKey = models.TextField(null=True, blank=True)
+    publicKey = models.TextField(null=True, blank=True)
+    rKey = models.TextField(null=True, blank=True)
+    #userKey = models.BinaryField(null=False)
 
-    def decryptBody(self, privateKey):
-        key = privateKey.importKey()
-        self.body = key.decrypt(self.body)"""
+    """def set_privateKey(self, value):
+        self.privateKey = value
+        self.privateKey = key.exportKey()
+        print(self.privateKey)
+
+    def get_privateKey(self):
+        print(self.privateKey)
+        return self.privateKey
+
+    def set_publicKey(self, value):
+        self.publicKey = value
+        self.publicKey = key.publickey().exportKey()
+        print(self.publicKey)
+
+    def get_publicKey(self):
+        print(self.publicKey)
+        return self.publicKey"""
+
+    def get_username(self):
+        return self.user.username
 

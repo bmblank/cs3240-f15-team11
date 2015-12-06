@@ -8,7 +8,12 @@
 {{r.recipient}}
 <h2>Text</h2>
 {{ r.body }}
-
 <br>
+
+<form method="POST" class="post-form">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="save btn btn-default">Decrypt</button>
+</form>
+
 <a href="{% url 'delete_memo' memo_id=r.pk %}">Delete this message</a>
 {% endblock %}
