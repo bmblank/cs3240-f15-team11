@@ -35,13 +35,13 @@ if __name__ == '__main__':
 
     while True:
         print("What do you want to do? Or enter nothing to exit.")
-        print("\tR - list reports")
-        print("\tD - decrypt file")
-        print("\tE - encrypt file")
-        print("\tX - view report")
+        print("\tr - list reports")
+        print("\td - decrypt file")
+        print("\te - encrypt file")
+        print("\tx - view report")
         choice = input(">>> ").strip()
 
-        if choice == 'R':
+        if choice == 'r':
             print("List reports")
             # List the reports the user has access to. Include identifier so it (+ attachment(s)) can be downloaded
             r = requests.get('http://localhost:8000/api/reports/', auth=(username, password))
@@ -59,7 +59,7 @@ if __name__ == '__main__':
                     print('URL:', report['url'])
                     print()
 
-        elif choice == 'D':
+        elif choice == 'd':
             print("Decrypt file")
             file_to_decrypt = input("Which file do you want to decrypt? ").strip()
             if not os.path.isfile(file_to_decrypt):
@@ -70,7 +70,7 @@ if __name__ == '__main__':
             else:
                 print("Decryption did not work.")
 
-        elif choice == 'E':
+        elif choice == 'e':
             print("Encrypt file")
             file_to_encrypt = input("Which file do you want to encrypt? ").strip()
             if not os.path.isfile(file_to_encrypt):
@@ -81,7 +81,7 @@ if __name__ == '__main__':
             else:
                 print("Encryption did not work.")
 
-        elif choice == 'X':
+        elif choice == 'x':
             print("View report")
             url_input = input("Enter an article URL to view: ").strip()
             r = requests.get(url_input, auth=(username, password))
