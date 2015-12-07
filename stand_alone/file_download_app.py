@@ -103,18 +103,18 @@ if __name__ == '__main__':
             attachment_choice_input = input("Would you like to download attachments? (y or n) ")
             if attachment_choice_input == 'y':
                 # download attachments for this report
-                for file_url in report['Attachments']:
-                    print("tryna download", file_url)
+                file_url = report['Attachments']
+                print("tryna download", file_url)
 
-                    r = requests.get(file_url, stream=True)
-                    if r.status_code == 200:
+                r = requests.get(file_url, stream=True)
+                if r.status_code == 200:
 
-                        _, file_name = os.path.split(file_url)
-                        full_path = os.path.join('attachments', file_name)
-                        with open(full_path, 'wb') as f:
-                            r.raw.decode_content = True
-                            shutil.copyfileobj(r.raw, f)
-                            print("Wrote attachment to", full_path)
+                    _, file_name = os.path.split(file_url)
+                    full_path = os.path.join('downloaded_attachments', file_name)
+                    with open(full_path, 'wb') as f:
+                        r.raw.decode_content = True
+                        shutil.copyfileobj(r.raw, f)
+                        print("Wrote attachment to", full_path)
 
             elif attachment_choice_input == 'n':
                 # not downloading attachments for this report
