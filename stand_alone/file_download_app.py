@@ -36,9 +36,9 @@ if __name__ == '__main__':
     while True:
         print("What do you want to do? Or enter nothing to exit.")
         print("\tr - list reports")
+        print("\tx - view report")
         print("\td - decrypt file")
         print("\te - encrypt file")
-        print("\tx - view report")
         choice = input(">>> ").strip()
 
         if choice == 'r':
