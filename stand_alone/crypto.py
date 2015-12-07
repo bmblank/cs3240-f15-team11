@@ -1,5 +1,3 @@
-from Crypto.PublicKey import RSA
-from Crypto import Random
 from Crypto.Cipher import AES
 import os.path
 
@@ -50,23 +48,16 @@ def decrypt_file(file, passphrase): #expects passphrase to be a string
         n.write(decoded)
     print("Your newly decrypted file is: " + new_file)
     # print(decoded)
-    # print("successful decrption func")
+    # print("successful decryption function")
     return True
 
+if __name__ == '__main__':
+    encrypt = input("Are you encrypting (Enter 1) or decrypting (Enter 2)? ")
+    filename = input("What's the file name? ")
+    passcode = input("What's the passphrase? ")
 
-encrypt = input("Are you encrypting (Enter 1) or decrypting (Enter 2)? ")
-filename = input("What's the file name? ")
-passcode = input("What's the passcode? ")
-
-if encrypt == "1":
-    print("Encrypting file")
-    encrypt_file(filename, passcode)
-else:
-    decrypt_file(filename, passcode)
-
-
-
-
-# passphrase = b'Sixteen sdfsddddddddddddddsaldkddddddddddddddddddddddddddddddddddddddddddd'
-# print(encrypt_file('011.PNG', passphrase))
-# print(decrypt_file('011.PNG.enc', passphrase))
+    if encrypt == "1":
+        print("Encrypting file")
+        encrypt_file(filename, passcode)
+    else:
+        decrypt_file(filename, passcode)

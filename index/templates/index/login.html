@@ -1,8 +1,16 @@
-<form method="post" action=".?next={{ redirect_to }}"> {% csrf_token %}
-    <input type="text" name="username" placeholder="Username"/>
-    <input type="password" name="password" placeholder="Password"/>
+{% extends 'index/base.html' %}
 
-    <input type="submit" value="Login"/>
-</form>
+{% block title %}
+    <title>Login</title>
+{% endblock %}
 
-<a href="/register/">Sign up</a>
+{% block content %}
+    <form method="post" action=".?next={{ redirect_to }}"> {% csrf_token %}
+        <input type="text" name="username" placeholder="Username"/>
+        <input type="password" name="password" placeholder="Password"/>
+
+        <input type="submit" value="Login"/>
+    </form>
+
+    <a href="/register/">Sign up</a>
+{% endblock %}

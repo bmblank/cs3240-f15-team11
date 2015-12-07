@@ -1,31 +1,37 @@
 {% extends 'index/base.html' %}
+
+{% block title %}
+    <title>Your Reports</title>
+{% endblock %}
+
 {% block content %}
-<h1>Your reports </h1>
+    <h1>Your Reports</h1>
 
-{% if your_folders_list %}
-<p>These are the folders you have.</p>
-    <ul>
-    {% for f in your_folders_list %}
-        <li><a href="{% url 'folder_details' f.id %}">{{ f.Folder_Name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>You have not created any folders.</p>
-{% endif %}
+    {% if your_folders_list %}
+        <p>These are the folders you have.</p>
+        <ul>
+            {% for f in your_folders_list %}
+                <li><a href="{% url 'folder_details' f.id %}">{{ f.Folder_Name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not created any folders.</p>
+    {% endif %}
 
 
-{% if your_unsorted_reports %}
-<p>These are the unsorted reports you have created.</p>
-    <ul>
-    {% for r in your_unsorted_reports %}
-        <li><a href="{% url 'detail' r.id %}">{{ r.title }}</a><br>Author: {{r.author}}<br>Description: {{r.Short_Description}}</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>You have not created any reports or all your reports are in your folders.</p>
-{% endif %}
+    {% if your_unsorted_reports %}
+        <p>These are the unsorted reports you have created.</p>
+        <ul>
+            {% for r in your_unsorted_reports %}
+                <li>
+                    <a href="{% url 'detail' r.id %}">{{ r.title }}</a><br>Author: {{ r.author }}<br>Description: {{ r.Short_Description }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not created any reports or all your reports are in your folders.</p>
+    {% endif %}
 
-<a href="/yourreports/createfolder">Create Folder</a>
-<a href="{% url 'create' %}">Create Report</a>
-
+    <a href="/yourreports/createfolder">Create Folder</a>
+    <a href="{% url 'create' %}">Create Report</a>
 {% endblock %}

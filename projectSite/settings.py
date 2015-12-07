@@ -40,8 +40,13 @@ INSTALLED_APPS = [
     'reports',
     'memos',
     'index',
+    'rest_framework',
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated', ),
+    'PAGE_SIZE': 10
+}
 
 LOGIN_URL = '/login/'
 
