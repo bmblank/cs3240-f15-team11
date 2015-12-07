@@ -112,7 +112,7 @@ def Register(request):
     return render(request, 'index/register.html', {'user_form': user_form})
 
 def Login(request):
-    next = request.GET.get('next', '/home/')
+    next = request.GET.get('next', '/memos/inbox/')
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
