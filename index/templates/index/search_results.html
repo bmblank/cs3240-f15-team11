@@ -6,8 +6,16 @@
 
 {% block content %}
     <form method="get" action="/search/">
-        <label for="id_q">Search:</label>
-        <input type="text" name="q" id="id_q"/>
+        <label for="id_q">Search in Title and Detailed Description:</label>
+        <input type="text" name="q" id="id_q"/><br>
+        <label for="id_q">Search in Title:</label>
+        <input type="text" name="titleq" id="id_titleq"/> <br>
+        <label for="id_q">Search in Short Description:</label>
+        <input type="text" name="sdescripq" id="id_sdescripq"/><br>
+        <label for="id_q">Search in Detailed Description:</label>
+        <input type="text" name="descripq" id="id_descripq"/><br>
+        <label for="id_q">Search in Location:</label>
+        <input type="text" name="locationq" id="id_locationq"/><br>
         <input type="submit" value="Submit"/>
     </form>
     You searched for "{{ query_string }}" and the results are listed below.

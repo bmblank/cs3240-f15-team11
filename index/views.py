@@ -69,16 +69,59 @@ def search(request):
     show_these_reports = None
     if ('q' in request.GET) and request.GET['q'].strip():
         query_string = request.GET['q']
+        title_query_string = request.GET['titleq']
+        print("Title" + title_query_string)
+        sDescrip_query_string = request.GET['sdescripq']
+        print("Short Descrip Q" + sDescrip_query_string)
+        dDescrip_query_string = request.GET['descripq']
+        print("Long Descrip Q" + dDescrip_query_string)
+        loc_query_string = request.GET['locationq']
+        print("Loc " + loc_query_string)
         
         report_query = get_query(query_string, ['title', 'Detailed_Description',])
-        
-        found_reports = Report.objects.filter(report_query).order_by('-created')
+
+        treport_query = (get_query(title_query_string, ['title',]))
+        sDreport_query = get_query(sDescrip_query_string, ['Short_Description',])
+        dDreport_query = get_query(dDescrip_query_string, ['Detailed_Description',])
+        lreport_query = get_query(loc_query_string, ['Location_of_Event',])
+
+
+        global_found = Report.objects.all()
+
+        if (query_string != '') :
+            global_found = global_found.filter(report_query)
+            print(global_found)
+
+        if (title_query_string != '') :
+            global_found = global_found.filter(treport_query)
+            print(global_found)
+
+        if (sDescrip_query_string != '') :
+            global_found = global_found.filter(sDreport_query)
+            print(global_found)
+
+        if (dDescrip_query_string != '') :
+            global_found = global_found.filter(dDreport_query)
+            print(global_found)
+
+        if (loc_query_string != '') :
+            global_found = global_found.filter(lreport_query)
+            print(global_found)
+
+
+        global_found = global_found.order_by('-created')
+
+
+        #found_reports = Report.objects.filter(treport_query).order_by('-created')
+        #found_reports = Report.objects.filter(sDreport_query).order_by('-created')
+        #found_reports = Report.objects.filter(dDreport_query).order_by('-created')
+        #found_reports = Report.objects.filter(lreport_query).order_by('-created')
 
         show_these_reports = []
 
         vgroupnames = request.user.groups.values_list('name',flat=True)
 
-        for rep in found_reports:
+        for rep in global_found:
             if rep.group_name in vgroupnames or 'SiteManager' in vgroupnames:
                 show_these_reports.append(rep)
 
