@@ -16,6 +16,7 @@ from Crypto import Random
 from .models import Key
 from .forms import DecryptForm
 import base64
+import binascii
 
 
 # Create your views here.
@@ -105,10 +106,12 @@ def MemoDetails(request, memo_id):
         form = DecryptForm(request.POST)
         print("REQUEST: " + request.POST.get('decryptField'))
 
-        #recUserObj = User.objects.get(username=memo.recipient_username)
         key = Key.objects.get(user=request.user)
-        r.body = decryptBody(r.body, key.privateKey)
-        #r.body = decryptBody(r.body, request.POST.get('decryptField'))
+        #r.body = decryptBody(r.body, key.privateKey)
+        #bytetext = base64.b64encode(request.POST.get('decryptField'))
+        #bin = binascii.unhexlify(r.body)
+        #r.body = decryptBody(r.body, bin)
+        r.body = decryptBody(r.body, request.POST.get('decryptField'))
     else:
         form = DecryptForm()
     return render(request, 'memos/memodetails.html', {'r': r, 'form': form})
@@ -119,22 +122,19 @@ def DeleteMemo(request, memo_id):
 
 def encryptBody(text, publicRKey):
     encKey = RSA.importKey(publicRKey)
-    #encMsg = str(encKey.encrypt(base64.b64encode(text), 32)[0])
-    #print(encMsg)
-    #print(encMsg[2:-1])
     textutf = text.encode('utf8')
     enc = encKey.encrypt(textutf, None)[0]
     encb64 = base64.encodebytes(enc)
     return encb64
-    #return encMsg[2:-1]
 
 def decryptBody(text, rKey):
     print("This is rKEY: ", rKey)
 
-    decKey = RSA.importKey(rKey)
-    print("THIS IS AFTER DECKEY")
+    #rKey = "-----BEGIN RSA PRIVATE KEY----- \nMIICXQIBAAKBgQDHpypDIkTLe8cKWBYO0WX7NdED8wmzlHXMeaU+UuqOAR5vf27d \nbGSzOZmpYyzX06oAbOvAf2D7k2b3vzV5Sc1yQVY4xqZw9bR7bnw1r1wGM0rpITHw \nQjkxGd+/T8xdHRzFR4Qc8yic3T59oso6bjCn+ROSHBg6myBPDkir9pGS/QIDAQAB \nAoGAWN30dstjGbuvndAViWT1YrrSnVJpqBBV2rzuq24Wzzx6QqDTRSXBMPFbj0UA \nqdSiH+xbh2RrU6+Jro7ii2kpU3+nZk60w1h4O8cA0CA06YYP+3kKbkMvO9yB8ZHc \nTzZI8JaopFufdfB9ACxERmSTZ57OlIkMVaGLYE2dF4Ib4IECQQDc+qUQz27eKgP/ \nbWE0k61WHQIYP/HIF0PcPXFTVFpx+NVIcLWfZSpdQmse6P5VV8KRB/zVpI14u06Q \n+/v5rGOhAkEA50tMU6M68tXSj1/JNhXC29mG4Lw4yYFxSwcTsKWHsj0bkmuMSejo \nCQLZqbVihxvRpnCQTXTEb23FMzFiftXx3QJBAJISGLTA+Z9flJ7udZfkmmrW6ACR \nnEhQoKnf755Ony7BdnLZFiWUIOnesqKPDzfouBNYfVfX2zBYWDncZ5aFzqECQEjv \nS6BMJriQiJdBgzeU4R9mlsujTtzr/ofEMYdQi1u/PUSMuW5NDW5aAb0sP2ePdCrh \n7/8cxRzGJpsgBYktedkCQQC1/zR/NrCQky4ypsnM0Am8dajNodVqyey2ytRSsDGB \n/27qJwAhPZOa4giap7GXBhe0+Xco1yJeexP7wjLvP0zQ \n-----END RSA PRIVATE KEY-----"
+
+    decKey = RSA.importKey(rKey, "PEM")
+    print("THIS IS AFTER DECKEY: " + str(rKey))
     print("Imported Key: "+ str(decKey))
-    #return str(decKey.decrypt(base64.b64encode(text)))
     dec64 = base64.b64decode(text)
     decr = decKey.decrypt(dec64)
     orig = decr.decode('utf8')

@@ -409,7 +409,10 @@ def Register(request):
 
             print("public key is: " + str(key.publicKey))
             print("private key is: " + str(key.privateKey))
-            return render(request, 'index/success_register.html', {'private_key': key.rKey.exportKey()})
+            print("NOT EXPORT: str")
+            return render(request, 'index/success_register.html', {'private_key': key.rKey.exportKey("PEM")})
+            bin = key.rKey.exportKey("DER")
+            #return render(request, 'index/success_register.html', {'private_key': hex(bin)})
 
         else:
             print("USER ERROR!")

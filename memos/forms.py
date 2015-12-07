@@ -10,4 +10,4 @@ class MemoForm(forms.ModelForm):
 		fields = ('recipient_username', 'subject', 'body', 'encrypted')
 
 class DecryptForm(forms.Form):
-	decryptField = forms.CharField(max_length=5000, label='Private Key for Decryption')
+	decryptField = forms.CharField(max_length=5000, label='Private Key for Decryption', widget=forms.Textarea)
