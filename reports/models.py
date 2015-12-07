@@ -36,6 +36,7 @@ class Report(models.Model):
     group_name = models.CharField(max_length=200, default='Public')
     author = models.ForeignKey(User, null=True, related_name='author')
     folder = models.ForeignKey(Folder, default=None, null=True, related_name='author')
+    # download = models.CharField(max_length=200, default=None)
 
 
     def __str__(self):              # __unicode__ on Python 2

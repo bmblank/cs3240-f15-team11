@@ -22,6 +22,8 @@ from rest_framework import permissions
 from index.permissions import IsOwnerOrInGroupOrReadOnly
 
 
+#####################SEARCH STUFF########################################################
+
 #http://julienphalip.com/post/2825034077/adding-search-to-a-django-site-in-a-snap
 def normalize_query(query_string,
                     findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
@@ -57,6 +59,7 @@ def get_query(query_string, search_fields):
             query = query & or_query
     return query
 
+@login_required
 def search(request):
     query_string = ''
     found_reports = None
@@ -76,10 +79,34 @@ def search(request):
             if rep.group_name in vgroupnames or 'SiteManager' in vgroupnames:
                 show_these_reports.append(rep)
 
-
-
     return render(request,'index/search_results.html', { 'query_string': query_string, 'show_these_reports': show_these_reports })
 
+#######################USER AUTHENTICATION STUFF########################################################
+
+def Register(request):
+    context = RequestContext(request)
+    registered = False
+
+    if request.method == 'POST':
+        user_form = UserForm(data=request.POST)
+
+        if user_form.is_valid() :
+            user = user_form.save()
+            user.set_password(user.password)
+
+            # public_group = Group.objects.get(name='Public')
+            public_group, created = Group.objects.get_or_create(name='Public')
+            public_group.user_set.add(user)
+
+            user.save()
+            registered = True
+            print("USER SUCCESS!")
+        else:
+            print("USER ERROR!")
+    else:
+        user_form = UserForm()
+    # user_form = UserForm()
+    return render(request, 'index/register.html', {'user_form': user_form})
 
 def Login(request):
     next = request.GET.get('next', '/home/')
@@ -120,6 +147,9 @@ def checkIfUserisSM(request):
     else:
         return False
 
+def isSiteManager(user):
+    return user.groups.filter(name='SiteManager').exists()
+
 @login_required
 def YourReports(request):
     your_reports_list = []
@@ -145,8 +175,10 @@ def YourReports(request):
 
     return render(request, 'index/yourreports.html', {'your_reports_list': your_reports_list, 'your_folders_list': your_folders_list, 'your_unsorted_reports': your_unsorted_reports})
 
+############################REPORT STUFF##################################################################
+
 @login_required
-def ReportList(request):
+def ReportList(request): #Shows a list of all the reports you have permission to see
 
     userIsSiteManager = checkIfUserisSM(request)
     reports_list = Report.objects.order_by('title')
@@ -175,40 +207,71 @@ def ReportList(request):
     context = {'has_permission_to_view_reports_list': has_permission_to_view_reports_list}
     return render(request, 'index/report.html', context)
 
-def isSiteManager(user):
-    return user.groups.filter(name='SiteManager').exists()
+@login_required
+def create(request): #Allows you to create a new report
+    download_url = ""
+    if request.method == "POST":
+        # form = ReportForm(request.POST, request.FILES)
+        form = ReportForm(request.POST, request.FILES)
 
+        if form.is_valid():
+            report = form.save(commit=False)
+            report.author = request.user
+            report.created = timezone.now()
+            
+            #if created == False, means that group already exists
+            new_group, created = Group.objects.get_or_create(name=report.group_name)
+
+            if created == True:
+                print("TRUEEEEEEEEEEEEEEEEE")
+                new_group.user_set.add(request.user)
+
+                admin_users = Group.objects.get(name='SiteManager').user_set.all()
+                print("ADMIN USERS HERE: ", admin_users)
+                for member in admin_users:
+                    print(type(member), type(request.user))
+                    new_group.user_set.add(member)
+                    print("NEW GROUP: ", new_group.user_set.all())
+                    new_group.save()
+
+                report.save()
+
+                return redirect('index.Home')
+
+            else:
+                valid_users = new_group.user_set.all()
+                print("HEEY", valid_users)
+
+                userIsSiteManager = checkIfUserisSM(request)
+
+                if request.user not in valid_users and not userIsSiteManager:
+                    print("You are not allowed to post to this group.")
+                    # messages.error(request, 'Document deleted.')
+                    # pass
+                else:
+                    report.save()
+
+                # new_group.save()
+                # current_user = request.user
+                # current_user.groups.add(new_group)
+                # current_user.save()
+
+            # return render(request, 'index/report.html')
+            return redirect('index.views.detail', report_id=report.pk)
+
+    else:
+        form = ReportForm
+    return render(request, 'index/create.html', {'form': form})
 
 @login_required
-def FolderDetails(request, folder_id):
-    f = get_object_or_404(Folder, pk=folder_id)
-    reports_in_folder = Report.objects.filter(folder=f)
-    return render(request, 'index/folderdetail.html', {'f': f, 'reports_in_folder': reports_in_folder})
-
-@login_required
-def RemoveFolder(request, folder_id):
-    f = get_object_or_404(Folder, pk=folder_id)
-    reports_in_folder = Report.objects.filter(folder=f)
-    for rep in reports_in_folder:
-        rep.folder=None
-        rep.save()
-    Folder.objects.filter(id=f.id).delete() 
-    return redirect('index.views.YourReports')     
-
-@login_required
-def DeleteReportsInFolder(request, folder_id):
-    f = get_object_or_404(Folder, pk=folder_id)
-    reports_in_folder = Report.objects.filter(folder=f)
-    for rep in reports_in_folder:
-        Report.objects.filter(id=rep.id).delete()   
-    return redirect('index.views.FolderDetails', folder_id=folder_id)     
-
-
-@login_required
-def detail(request, report_id):
+def detail(request, report_id): #This is when you try to look at a specific report
     r = get_object_or_404(Report, pk=report_id)
 
     authorIsViewing = False
+
+    print("THIS IS THE NAME OF THE REPORT", r.Attachments.name, r.Attachment_is_Encrypted)
+
+    attachment_link = '/media/' + str(r.Attachments)
 
     siteManagerIsViewing = isSiteManager(request.user)
 
@@ -226,19 +289,18 @@ def detail(request, report_id):
         form = MoveToFolderForm()
 
     if r.author.username == request.user.username:
-        print("HEY THE AUTHOR IS LOOKING AT THE REPORT THEY CREATED")
+        # print("HEY THE AUTHOR IS LOOKING AT THE REPORT THEY CREATED")
         authorIsViewing = True
     else:
         print("Some random rando is looking at a random report")
-    return render(request, 'index/detail.html', {'r': r, 'authorIsViewing': authorIsViewing, 'siteManagerIsViewing': siteManagerIsViewing, 'form':form})    
-
+    return render(request, 'index/detail.html', {'r': r, 'attachment_link': attachment_link,'authorIsViewing': authorIsViewing, 'siteManagerIsViewing': siteManagerIsViewing, 'form':form})    
 
 @login_required
 def EditReport(request, report_id):
     r = get_object_or_404(Report, pk=report_id)
 
     if request.method == "POST":
-        form = ReportForm(request.POST, instance=r)
+        form = ReportForm(request.POST, request.FILES, instance=r)
         if form.is_valid():
             r = form.save(commit=False)
             r.author = request.user
@@ -273,6 +335,60 @@ def EditReport(request, report_id):
     return render(request, 'index/create.html', {'form': form})
 
 @login_required
+def DeleteReport(request, report_id):
+    Report.objects.filter(id=report_id).delete()
+    return redirect('index.views.ReportList')   
+
+###############################FOLDER STUFF##################################################################
+
+@login_required
+def CreateFolder(request):
+    if request.method == "POST":
+        form = FolderForm(request.POST)
+        if form.is_valid():
+            folder = form.save(commit=False)
+            folder.creator = request.user
+
+            if request.POST.get("Folder_Name") == None:
+                return redirect('index.views.CreateFolder')
+            else:
+                new_folder, created = Folder.objects.get_or_create(Folder_Name=request.POST.get("Folder_Name"))
+                if created == False:
+                    print("This folder already exists.")
+                else:
+                    print("A new folder was created!")
+                    new_folder.creator = request.user
+                    new_folder.save()
+            return redirect('index.views.YourReports')    
+    else:
+        form = FolderForm
+    return render(request, 'index/createfolder.html', {'form': form})
+
+@login_required
+def FolderDetails(request, folder_id):
+    f = get_object_or_404(Folder, pk=folder_id)
+    reports_in_folder = Report.objects.filter(folder=f)
+    return render(request, 'index/folderdetail.html', {'f': f, 'reports_in_folder': reports_in_folder})
+
+@login_required
+def RemoveFolder(request, folder_id):
+    f = get_object_or_404(Folder, pk=folder_id)
+    reports_in_folder = Report.objects.filter(folder=f)
+    for rep in reports_in_folder:
+        rep.folder=None
+        rep.save()
+    Folder.objects.filter(id=f.id).delete() 
+    return redirect('index.views.YourReports')     
+
+@login_required
+def DeleteReportsInFolder(request, folder_id):
+    f = get_object_or_404(Folder, pk=folder_id)
+    reports_in_folder = Report.objects.filter(folder=f)
+    for rep in reports_in_folder:
+        Report.objects.filter(id=rep.id).delete()   
+    return redirect('index.views.FolderDetails', folder_id=folder_id)     
+
+@login_required
 def RenameFolder(request, folder_id):
     f = get_object_or_404(Folder, pk=folder_id)
 
@@ -295,19 +411,13 @@ def RemoveReportFromFolder(request, report_id):
     r.save()
     return redirect('index.views.YourReports')
 
-@login_required
-def DeleteReport(request, report_id):
-    Report.objects.filter(id=report_id).delete()
-    return redirect('index.views.ReportList')
+#####################GRANTING PERMISSIONS TO OTHER USERS###################################################
 
 @login_required
 def GivePermissions(request):
 
     valid_groups = request.user.groups.all()
     valid_group_names = []
-
-    # all_users = User.objects.filter(is_active=True)
-
 
     for g in valid_groups:
         valid_group_names.append(g.name)
@@ -326,8 +436,6 @@ def GivePermissions(request):
         selected_user_obj = User.objects.get(pk=selected_user)
         print("SELCTED USER OBJ: ", selected_user_obj, type(selected_user_obj))
 
-
-
         selected_group = request.POST.get("group")
 
         if selected_group in valid_group_names:
@@ -338,14 +446,13 @@ def GivePermissions(request):
         else:
             print("This group does not exist or you do not have permission to add people to this group")
 
-
-
         print(request.POST.get("user"))
     else:
         permission_form = GivePermissionsForm()
 
     return render(request, 'index/givepermissions.html', {'permission_form': permission_form, 'valid_group_names': valid_group_names})
 
+#####################ACCOUNT SUSPENSION STUFF FOR SITEMANAGERS################################################
 
 @user_passes_test(isSiteManager, login_url='/home/')
 def Suspension(request):
@@ -372,121 +479,22 @@ def Suspension(request):
         selected_user_obj.save()
         return redirect('index.views.Home')
 
-
     else:
-
         suspension_form = SuspensionForm()
         unsuspension_form = UnsuspensionForm()
 
     return render(request, 'index/suspension.html', {'suspension_form': suspension_form, 'unsuspension_form': unsuspension_form})
 
-def Register(request):
-    context = RequestContext(request)
-    registered = False
+######################BASIC SITE INTRO STUFF#####################################################################################
 
-    if request.method == 'POST':
-        user_form = UserForm(data=request.POST)
+def GettingStarted(request):
+    return render(request, "index/about.html", {})
 
-        if user_form.is_valid() :
-            user = user_form.save()
-            user.set_password(user.password)
+def Mission(request):
+    return render(request, "index/mission.html", {})
 
-            # public_group = Group.objects.get(name='Public')
-            public_group, created = Group.objects.get_or_create(name='Public')
-            public_group.user_set.add(user)
-
-            user.save()
-            registered = True
-            print("USER SUCCESS!")
-        else:
-            print("USER ERROR!")
-    else:
-        user_form = UserForm()
-
-
-    # user_form = UserForm()
-    return render(request, 'index/register.html', {'user_form': user_form})
-
-
-
-@login_required
-def create(request):
-    if request.method == "POST":
-        # form = ReportForm(request.POST, request.FILES)
-        form = ReportForm(request.POST)
-
-        if form.is_valid():
-            report = form.save(commit=False)
-            report.author = request.user
-            report.created = timezone.now()
-            
-            #if created == False, means that group already exists
-            new_group, created = Group.objects.get_or_create(name=report.group_name)
-
-            if created == True:
-                print("TRUEEEEEEEEEEEEEEEEE")
-                new_group.user_set.add(request.user)
-
-                admin_users = Group.objects.get(name='SiteManager').user_set.all()
-                print("ADMIN USERS HERE: ", admin_users)
-                for member in admin_users:
-                    print(type(member), type(request.user))
-                    new_group.user_set.add(member)
-                    print("NEW GROUP: ", new_group.user_set.all())
-                    new_group.save()
-
-                report.save()
-            else:
-                valid_users = new_group.user_set.all()
-                print("HEEY", valid_users)
-
-                userIsSiteManager = checkIfUserisSM(request)
-
-                if request.user not in valid_users and not userIsSiteManager:
-                    print("You are not allowed to post to this group.")
-                    # messages.error(request, 'Document deleted.')
-                    # pass
-                else:
-                    report.save()
-
-                # new_group.save()
-                # current_user = request.user
-                # current_user.groups.add(new_group)
-                # current_user.save()
-
-            # return render(request, 'index/report.html')
-            return redirect('index.views.detail', report_id=report.pk)
-
-    else:
-        form = ReportForm
-    return render(request, 'index/create.html', {'form': form})
-
-@login_required
-def CreateFolder(request):
-    if request.method == "POST":
-        form = FolderForm(request.POST)
-        if form.is_valid():
-            folder = form.save(commit=False)
-            folder.creator = request.user
-
-            if request.POST.get("Folder_Name") == None:
-                return redirect('index.views.CreateFolder')
-            else:
-                new_folder, created = Folder.objects.get_or_create(Folder_Name=request.POST.get("Folder_Name"))
-                if created == False:
-                    print("This folder already exists.")
-                else:
-                    print("A new folder was created!")
-                    new_folder.creator = request.user
-                    new_folder.save()
-            return redirect('index.views.YourReports')
-
-
-
-            
-    else:
-        form = FolderForm
-    return render(request, 'index/createfolder.html', {'form': form})
+def Security(request):
+    return render(request, "index/security.html", {})
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -514,3 +522,7 @@ class ReportViewSet(viewsets.ModelViewSet):
     queryset = Report.objects.all()
     serializer_class = ReportSerializer
     permission_classes = (IsOwnerOrInGroupOrReadOnly, )
+
+
+def Contact(request):
+    return render(request, "index/contact.html", {})

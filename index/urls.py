@@ -22,5 +22,9 @@ urlpatterns = [
     url(r'^yourreports/folder/(?P<folder_id>[0-9]+)/rename$', views.RenameFolder, name='rename_folder'),
     url(r'^yourreports/folder/(?P<folder_id>[0-9]+)/delete_folder_reports$', views.DeleteReportsInFolder, name='delete_folder_reports'), 
     url(r'^search/$', views.search, name='search'),
+    url(r'^about/$', views.GettingStarted),
+    url(r'^mission/$', views.Mission),
+    url(r'^security/$', views.Security),
+    url(r'^contact/$', views.Contact),
 
 ]
