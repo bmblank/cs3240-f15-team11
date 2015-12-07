@@ -118,7 +118,7 @@ def MemoDetails(request, memo_id):
 
 def DeleteMemo(request, memo_id):
     Memo.objects.filter(id=memo_id).delete()
-    return redirect('memos#.views.Inbox')
+    return redirect('memos.views.Inbox')
 
 def encryptBody(text, publicRKey):
     encKey = RSA.importKey(publicRKey)
