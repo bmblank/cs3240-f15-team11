@@ -8,15 +8,17 @@ class IsOwnerOrInGroupOrReadOnly(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        print(request.user, "is tryna")
+        print('\n', request.user, "is tryna")
 
-        print("Checking permissions for", str(request), str(obj))
+        print("\tChecking permissions for:", obj.title)
+        print('\t', dir(request.user))
+        print('\t', dir(obj))
 
         if request.user.is_authenticated():
 
             # Write permissions are only allowed to the author of the report.
             if obj.author == request.user:
-                print("Author is user -> access granted.")
+                print("\t\tAuthor is user -> r/w access granted.")
                 return True
 
             # Read permissions are allowed to either:
@@ -25,25 +27,26 @@ class IsOwnerOrInGroupOrReadOnly(permissions.BasePermission):
 
             # GET, HEAD or OPTIONS requests
             if request.method in permissions.SAFE_METHODS:
-                print("User is reading, not writing...")
+                print("\t\tUser is reading, not writing...")
                 if obj.group_name:
-                    print("Object is in a group.")
+                    print("\t\t\tObject is in a group.")
                     if obj.group_name.lower() == 'public':
-                        print("Object's group is public -> access granted.")
+                        print("\t\t\t\tObject's group is public -> read access granted.")
                         return True
-                    if obj.group_name == request.user.group_name:
-                        print("Object's group == request's group -> access granted.")
+                    if obj.group_name in request.user.groups:
+                        print("\t\t\t\tObject's group == request's group -> read access granted.")
                     else:
-                        print("Object's group != request's group -> access denied.")
-                    return obj.group_name == request.user.group_name
+                        print("\t\t\t\tObject's group != request's group -> read access denied.")
+                    return obj.group_name == request.user.groups
                 else:
                     # object has no group, so all authenticated can access
-                    print("Object has no group -> access granted.")
+                    print("\t\t\tObject has no group -> read access granted.")
                     return True
 
+            print("\t\tNot allowed for", obj.title)
             return False
 
         else:
-            print("User is not authenticated -> access denied.")
+            print("\tUser is not authenticated -> r/w access denied.")
             return False
 
