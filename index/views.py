@@ -67,7 +67,7 @@ def search(request):
     query_string = ''
     found_reports = None
     show_these_reports = None
-    if ('q' in request.GET) and request.GET['q'].strip():
+    if ((('q' in request.GET) and request.GET['q'].strip()) or (('titleq' in request.GET) and request.GET['titleq'].strip()) or (('sdescripq' in request.GET) and request.GET['sdescripq'].strip()) or (('descripq' in request.GET) and request.GET['descripq'].strip()) or (('locationq' in request.GET) and request.GET['locationq'].strip())):
         query_string = request.GET['q']
         title_query_string = request.GET['titleq']
         print("Title" + title_query_string)
