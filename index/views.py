@@ -320,10 +320,10 @@ def EditReport(request, report_id):
         form = ReportForm(instance=r)
     return render(request, 'index/create.html', {'form': form})
 
- @login_required
- def DeleteReport(request, report_id):
-     Report.objects.filter(id=report_id).delete()
-     return redirect('index.views.ReportList')   
+@login_required
+def DeleteReport(request, report_id):
+    Report.objects.filter(id=report_id).delete()
+    return redirect('index.views.ReportList')   
 
 ###############################FOLDER STUFF##################################################################
 
