@@ -203,9 +203,10 @@ def ReportList(request): #Shows a list of all the reports you have permission to
 
 @login_required
 def create(request): #Allows you to create a new report
+    download_url = ""
     if request.method == "POST":
         # form = ReportForm(request.POST, request.FILES)
-        form = ReportForm(request.POST)
+        form = ReportForm(request.POST, request.FILES)
 
         if form.is_valid():
             report = form.save(commit=False)
@@ -228,6 +229,9 @@ def create(request): #Allows you to create a new report
                     new_group.save()
 
                 report.save()
+
+                return redirect('index.Home')
+
             else:
                 valid_users = new_group.user_set.all()
                 print("HEEY", valid_users)
@@ -259,6 +263,10 @@ def detail(request, report_id): #This is when you try to look at a specific repo
 
     authorIsViewing = False
 
+    print("THIS IS THE NAME OF THE REPORT", r.Attachments.name, r.Attachment_is_Encrypted)
+
+    attachment_link = '/media/' + str(r.Attachments)
+
     siteManagerIsViewing = isSiteManager(request.user)
 
     if request.method == "POST":
@@ -275,18 +283,18 @@ def detail(request, report_id): #This is when you try to look at a specific repo
         form = MoveToFolderForm()
 
     if r.author.username == request.user.username:
-        print("HEY THE AUTHOR IS LOOKING AT THE REPORT THEY CREATED")
+        # print("HEY THE AUTHOR IS LOOKING AT THE REPORT THEY CREATED")
         authorIsViewing = True
     else:
         print("Some random rando is looking at a random report")
-    return render(request, 'index/detail.html', {'r': r, 'authorIsViewing': authorIsViewing, 'siteManagerIsViewing': siteManagerIsViewing, 'form':form})    
+    return render(request, 'index/detail.html', {'r': r, 'attachment_link': attachment_link,'authorIsViewing': authorIsViewing, 'siteManagerIsViewing': siteManagerIsViewing, 'form':form})    
 
 @login_required
 def EditReport(request, report_id):
     r = get_object_or_404(Report, pk=report_id)
 
     if request.method == "POST":
-        form = ReportForm(request.POST, instance=r)
+        form = ReportForm(request.POST, request.FILES, instance=r)
         if form.is_valid():
             r = form.save(commit=False)
             r.author = request.user
