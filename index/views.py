@@ -19,7 +19,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from index.serializers import UserSerializer, GroupSerializer, ReportSerializer
 from rest_framework import permissions
-from index.permissions import IsOwnerOrReadOnly
+from index.permissions import IsOwnerOrInGroupOrReadOnly
 
 
 #http://julienphalip.com/post/2825034077/adding-search-to-a-django-site-in-a-snap
@@ -513,4 +513,4 @@ class ReportViewSet(viewsets.ModelViewSet):
     """
     queryset = Report.objects.all()
     serializer_class = ReportSerializer
-    permission_classes = (IsOwnerOrReadOnly, )
+    permission_classes = (IsOwnerOrInGroupOrReadOnly, )
