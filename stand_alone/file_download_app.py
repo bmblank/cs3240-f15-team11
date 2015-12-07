@@ -98,6 +98,14 @@ if __name__ == '__main__':
             print('URL:', report['url'])
             print()
 
+            attachment_choice_input = input("Would you like to download attachments? (y or n) ")
+            if attachment_choice_input == 'y':
+                # download attachment for this report
+                pass
+            elif attachment_choice_input == 'n':
+                # not downloading attachment for this report
+                pass
+
         elif choice == '':
             exit()
 
