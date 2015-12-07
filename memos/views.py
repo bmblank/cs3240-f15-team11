@@ -15,6 +15,7 @@ from Crypto.PublicKey import RSA
 from Crypto import Random
 from .models import Key
 from .forms import DecryptForm
+import base64
 
 
 # Create your views here.
@@ -118,7 +119,14 @@ def DeleteMemo(request, memo_id):
 
 def encryptBody(text, publicRKey):
     encKey = RSA.importKey(publicRKey)
-    return encKey.encrypt(text.encode('utf-8'), 32)
+    #encMsg = str(encKey.encrypt(base64.b64encode(text), 32)[0])
+    #print(encMsg)
+    #print(encMsg[2:-1])
+    textutf = text.encode('utf8')
+    enc = encKey.encrypt(textutf, None)[0]
+    encb64 = base64.encodebytes(enc)
+    return encb64
+    #return encMsg[2:-1]
 
 def decryptBody(text, rKey):
     print("This is rKEY: ", rKey)
@@ -126,4 +134,8 @@ def decryptBody(text, rKey):
     decKey = RSA.importKey(rKey)
     print("THIS IS AFTER DECKEY")
     print("Imported Key: "+ str(decKey))
-    return decKey.decrypt(text.decode('utf-8'))
+    #return str(decKey.decrypt(base64.b64encode(text)))
+    dec64 = base64.b64decode(text)
+    decr = decKey.decrypt(dec64)
+    orig = decr.decode('utf8')
+    return orig
