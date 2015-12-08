@@ -69,7 +69,7 @@
 
     a.one:link, a.one:visited {
         display: block;
-        width: 201px;
+        width: 170px;
         font-weight: bold;
         color: #ffffff;
         background-color: #FFA500;
@@ -94,19 +94,10 @@
 
 <ul id="nav">
     <li class="ui"><a class="one" href="/home/">Home</a></li>
+    <li class="ui"><a class="one" href="{% url 'inbox_list' %}">Inbox</a></li>
     <li class="ui"><a class="one" href="/report/">Reports</a></li>
     <li class="ui"><a class="one" href="/yourreports/">My Reports</a></li>
     <li class="ui"><a class="one" href="/search/">Search Reports</a></li>
-    <li class="ui"><a class="one" href="{% url 'inbox_list' %}">Inbox</a></li>
-    <li class="ui"><a class="one" href="/givepermissions/">Grant Permissions</a></li>
-    {% if userIsSiteManager %}
-        <a href="/suspension/">Suspend accounts</a>
-    {% endif %}
-    {% if user.is_authenticated %}
-        <li class="ui"><a class="one" href="/logout/">Logout</a></li>
-    {% else %}
-        <li class="ui"><a class="one" href="/login/?next={{ request.path }}">Login</a></li>
-    {% endif %}
 </ul>
 
 {% block content %}
@@ -116,7 +107,15 @@
     <li class="ui"><a class="one" href="/about/">Getting Started</a></li>
     <li class="ui"><a class="one" href="/mission/">Mission Statement</a></li>
     <li class="ui"><a class="one" href="/security/">Security</a></li>
-    <li class="ui"><a class="one" href="/contact/">Contact Us</a></li>
+    <li class="ui"><a class="one" href="/givepermissions/">Grant Permissions</a></li>
+    {% if userIsSiteManager %}
+        <a href="/suspension/">Suspend accounts</a>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <li class="ui"><a class="one" href="/logout/">Logout</a></li>
+    {% else %}
+        <li class="ui"><a class="one" href="/login/?next={{ request.path }}">Login</a></li>
+    {% endif %}
 </ul>
 
 </body>
