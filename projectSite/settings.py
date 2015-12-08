@@ -12,8 +12,13 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 import os
 
+# Deploying with Heroku
+# Parse database configuration from $DATABASE_URL
+import dj_database_url
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +30,8 @@ SECRET_KEY = '4#g$tl3rf!n(p(m14haapi-yt0)9186ib)znj2(scaahhrt(ti'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -90,6 +96,7 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+DATABASES['default'] = dj_database_url.config()
 
 
 # Password validation
@@ -127,7 +134,14 @@ USE_TZ = True
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/dev/howto/static-files/
 
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Static asset configuration
+STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
