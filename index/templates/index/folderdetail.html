@@ -1,11 +1,11 @@
 {% extends 'index/base.html' %}
 
 {% block title %}
-    <title>Folder Detail</title>
+    <title>Folder Details</title>
 {% endblock %}
 
 {% block content %}
-    <h1>{{ f.Folder_Name }}</h1>
+    <h1>Your Folder: {{ f.Folder_Name }}</h1>
     {% if reports_in_folder %}
         <p>These are the reports in this folder.</p>
         <ul>

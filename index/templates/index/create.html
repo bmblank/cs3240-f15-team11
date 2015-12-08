@@ -1,11 +1,11 @@
 {% extends 'index/base.html' %}
 
 {% block title %}
-    <title>Edit Report</title>
+    <title>New/Edit Report</title>
 {% endblock %}
 
 {% block content %}
-    <h1>Edit Report</h1>
+    <h1>New/Edit Report</h1>
 
     <form method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
         {{ form.as_p }}

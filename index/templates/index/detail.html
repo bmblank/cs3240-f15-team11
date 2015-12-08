@@ -1,7 +1,7 @@
 {% extends 'index/base.html' %}
 
 {% block title %}
-    <title>Report Detail</title>
+    <title>Report Details</title>
 {% endblock %}
 
 {% block content %}
@@ -98,18 +98,25 @@
         {% if authorIsViewing%}
         <tr>
             <td>
-                <b>Folder</b>
+                <b>Folder Status:</b>
+            </td>
+            <td>
                     {% if r.folder %}
                         {{ r.folder.Folder_Name }}
                             <a href="{% url 'remove_from_folder' report_id=r.pk %}">Remove report from this folder</a>
                         {% else%}
                             This report that you've created is not in a folder.
                         {% endif %}
+            </td>
+        <tr>
+            <td>
                         <form method="POST" class="post-form">{% csrf_token %}
                             {{ form.as_p }}
                             <button type="submit" class="save btn btn-default">Move</button>
                         </form>
-                    
+            </td>
+        </tr>
+
             </td>
         </tr>
         {% endif %}
