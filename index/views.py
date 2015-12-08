@@ -282,7 +282,7 @@ def create(request): #Allows you to create a new report
 
                 report.save()
 
-                return redirect('index.Home')
+                # return redirect('index.Home')
 
             else:
                 valid_users = new_group.user_set.all()
