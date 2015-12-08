@@ -31,7 +31,7 @@ class Report(models.Model):
     Attachments = models.FileField(upload_to='report', blank=True)
     # sensitivity = models.IntegerField(choices=PRIORITY_CHOICES)
     Attachment_is_Encrypted = models.BooleanField(default=False)
-    Report_is_Public = models.BooleanField(default=True)
+    # Report_is_Public = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     group_name = models.CharField(max_length=200, default='Public')
     author = models.ForeignKey(User, null=True, related_name='author')
